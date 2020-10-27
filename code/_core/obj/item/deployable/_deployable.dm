@@ -8,8 +8,6 @@
 	item_count_max = 10
 	item_count_max_icon = 3
 
-	value = 5
-
 /obj/item/deployable/proc/get_deploy_time(var/mob/caller)
 	return SECONDS_TO_DECISECONDS(3)
 
@@ -19,7 +17,7 @@
 	S.dir = caller.dir
 	INITIALIZE(S)
 	FINALIZE(S)
-	caller.visible_message(span("\The [caller.name] deploys \the [S.name]."),span("You deploy \the [S.name]."))
+	caller.visible_message(span("notice","\The [caller.name] deploys \the [S.name]."),span("notice","You deploy \the [S.name]."))
 
 	add_item_count(-1)
 
@@ -52,6 +50,8 @@
 	structure_to_deploy = /obj/structure/interactive/barricade/
 	icon = 'icons/obj/item/deployable/barricade.dmi'
 	value = 80
+
+	weight = 3
 
 /obj/item/deployable/barricade/filled/Generate()
 	item_count_current = item_count_max

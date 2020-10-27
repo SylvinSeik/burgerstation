@@ -16,9 +16,16 @@
 
 	view_punch = 6
 
+<<<<<<< HEAD
 	slowdown_mul_held = HELD_SLOWDOWN_SMG
 
 	size = SIZE_3
+=======
+
+
+	size = SIZE_3
+	weight = 8
+>>>>>>> upstream/master
 
 
 	heat_per_shot = 0.03
@@ -67,10 +74,17 @@
 	attachment_undermount_offset_y = 16 - 16
 
 
+<<<<<<< HEAD
 /obj/item/weapon/ranged/bullet/magazine/rifle/civ_carbine/get_static_spread() //Base spread
 	return 0.01
 
 /obj/item/weapon/ranged/bullet/magazine/rifle/civ_carbine/get_skill_spread(var/mob/living/L) //Base spread
+=======
+/obj/item/weapon/ranged/bullet/magazine/rifle/civ_carbine/get_static_spread()
+	return 0.01
+
+/obj/item/weapon/ranged/bullet/magazine/rifle/civ_carbine/get_skill_spread(var/mob/living/L)
+>>>>>>> upstream/master
 	if(!heat_current)
 		return 0
 	return max(0,0.02 - (0.04 * L.get_skill_power(SKILL_RANGED)))

@@ -25,8 +25,6 @@
 
 	size = SIZE_4
 
+	icon_states = 11
 
-/obj/item/magazine/lmg_223/update_icon()
-	var/math_mod = (length(stored_bullets) / bullet_count_max) * 11
-	icon_state = "[initial(icon_state)]_[CEILING(math_mod, 1)]"
-	return ..()
+	value = 30
