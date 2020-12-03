@@ -47,7 +47,7 @@
 			GENERATE(I)
 			FINALIZE(I)
 			post_fill_inventory(I)
-			add_to_inventory(null,I,FALSE,TRUE,silent=TRUE)
+			add_to_inventory(null,I,FALSE,TRUE)
 
 		return TRUE
 

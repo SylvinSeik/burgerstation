@@ -9,7 +9,7 @@
 	if(L.following) //If we're following someone
 		if(L.following == P) //If we're following the person we're talking to.
 			.["hello"] = list(
-				"Awaiting orders.",
+				"Awaiting orders1.",
 				"*stop following me"
 			)
 			.["*stop following me"] = list(
@@ -17,24 +17,24 @@
 			)
 		else //If we're following someone else.
 			.["hello"] = list(
-				"Awaiting orders.",
+				"Awaiting orders2.",
 				"*follow me"
 			)
 			.["*follow me"] = list(
-				"I am currently following the orders of [L.following.real_name], so I cannot follow you."
+				"I am currently following the orders of [L.following.real_name]."
 			)
 	else //We're not following someone.
 		.["hello"] = list(
-			"Awaiting orders.",
+			"Awaiting orders3.",
 			"*follow me"
 		)
-		if(length(P.followers) < 2) //They have less than 2 followers
+		if(length(P.followers) <= 0) //They have no followers.
 			.["*follow me"] = list(
 				"I will follow."
 			)
 		else
 			.["*follow me"] = list(
-				"You already have too many people with you."
+				"You already have someone with you."
 			)
 
 	return .
@@ -59,7 +59,7 @@
 				L.following = null
 				P.followers -= L
 		if("*follow me")
-			if(length(P.followers) < 2 && !L.following)
+			if(length(P.followers) <= 0 && !L.following)
 				P.followers += L
 				L.ai.set_move_objective(P,TRUE)
 				L.following = P

@@ -77,5 +77,3 @@
 	size = SIZE_6
 
 	value = 1200
-
-	speed_bonus = 0.1

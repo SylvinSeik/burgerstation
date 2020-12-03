@@ -9,6 +9,8 @@
 	icon = 'icons/mob/living/simple/cult.dmi'
 	icon_state = "cultist"
 
+	damage_type = "cultist"
+
 	ai = /ai/cultist
 
 	stun_angle = 0
@@ -44,7 +46,6 @@
 	return .
 
 /mob/living/simple/npc/cult/construct
-	stun_angle = 0
 
 /mob/living/simple/npc/cult/construct/post_death()
 	. = ..()

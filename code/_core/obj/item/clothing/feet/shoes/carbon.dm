@@ -26,8 +26,6 @@
 
 	value = 150
 
-	speed_bonus = 0
-
 
 
 /obj/item/clothing/feet/shoes/carbon_boot/left

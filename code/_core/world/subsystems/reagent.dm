@@ -23,7 +23,7 @@ SUBSYSTEM_DEF(reagent)
 			continue
 		R.process_temperature()
 
-	return TRUE
+	return ..()
 
 /subsystem/reagent/Initialize()
 

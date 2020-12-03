@@ -3,20 +3,13 @@
 
 /mob/living/advanced/send_pain(var/pain_strength=50)
 
-	var/species/S = SPECIES(species)
+	var/species/S = all_species[species]
 
 	if(S.flags_species_traits & TRAIT_NO_PAIN)
 		return FALSE
 
 	return ..()
 
-
-/mob/living/advanced/can_be_attacked(var/atom/attacker,var/atom/weapon,var/params,var/damagetype/damage_type)
-
-	if(driving)
-		return FALSE
-
-	return ..()
 
 /mob/living/advanced/can_attack(var/atom/victim,var/atom/weapon,var/params,var/damagetype/damage_type)
 
@@ -217,15 +210,3 @@
 
 	return ..()
 */
-
-
-
-/mob/living/advanced/get_damage_received_multiplier(var/atom/attacker,var/atom/victim,var/atom/weapon,var/atom/hit_object,var/atom/blamed,var/damagetype/DT)
-
-	. = ..()
-
-	if(is_organ(hit_object))
-		var/obj/item/organ/O = hit_object
-		. *= O.damage_coefficient
-
-	return .

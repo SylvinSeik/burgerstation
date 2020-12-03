@@ -10,21 +10,18 @@ var/global/list/stored_mechs_by_ckey = list()
 			continue
 		if(!M.loaded_data["stored_mechs"])
 			M.loaded_data["stored_mechs"] = list()
-
-		for(var/mob/living/vehicle/mech/modular/V in stored_mechs_by_ckey[ckey])
-			save_mech(M,V)
+		try
+			for(var/mob/living/vehicle/mech/modular/V in stored_mechs_by_ckey[ckey])
+				log_debug("Mech Saving: Found mech [V.get_debug_name()].")
+				if(V.qdeleting)
+					M.loaded_data["stored_mechs"] -= V.mech_id //Gone forever.
+				else
+					M.loaded_data["stored_mechs"][V.mech_id] = V.save_mech_data()
+					log_debug("Storing mech. Data length: [length(M.loaded_data["stored_mechs"][V.mech_id])]")
+		catch(var/exception/e)
+			log_error("save_all_mechs(): [e] on [e.file]:[e.line]!")
 
 	return TRUE
-
-/proc/save_mech(var/savedata/client/mob/M,var/mob/living/vehicle/mech/modular/V)
-	log_debug("Mech Saving: Found mech [V.get_debug_name()].")
-	if(V.qdeleting)
-		M.loaded_data["stored_mechs"] -= V.mech_id //Gone forever.
-	else
-		M.loaded_data["stored_mechs"][V.mech_id] = V.save_mech_data()
-		log_debug("Storing mech. Data length: [length(M.loaded_data["stored_mechs"][V.mech_id])]")
-	return TRUE
-
 
 /mob/living/vehicle/mech/modular
 	name = "modular mech"
@@ -333,22 +330,22 @@ var/global/list/stored_mechs_by_ckey = list()
 						right_hand = null
 						update_sprite()
 					if("left_shoulder")
-						left_shoulder.drop_item(get_turf(caller))
+						left_shoulder.force_move(get_turf(caller))
 						left_shoulder.update_sprite()
 						left_shoulder = null
 						update_sprite()
 					if("right_shoulder")
-						right_shoulder.drop_item(get_turf(caller))
+						right_shoulder.force_move(get_turf(caller))
 						right_shoulder.update_sprite()
 						right_shoulder = null
 						update_sprite()
 					if("back")
-						back.drop_item(get_turf(caller))
+						back.force_move(get_turf(caller))
 						back.update_sprite()
 						back = null
 						update_sprite()
 					if("head")
-						head.drop_item(get_turf(caller))
+						head.force_move(get_turf(caller))
 						head.update_sprite()
 						head = null
 						update_sprite()
@@ -368,36 +365,25 @@ var/global/list/stored_mechs_by_ckey = list()
 			else if(mech_head)
 				caller?.to_chat(span("notice","You remove \the [mech_head.name] from \the [src.name]."))
 				mech_head.drop_item(get_turf(src))
-				if(caller)
-					mech_head.drop_item(get_turf(caller))
-				else
-					mech_head.drop_item(get_turf(src))
+				if(caller) mech_head.force_move(get_turf(caller))
 				mech_head = null
 				update_sprite()
 			else if(mech_arms)
 				caller?.to_chat(span("notice","You remove \the [mech_arms.name] from \the [src.name]."))
 				mech_arms.drop_item(get_turf(src))
-				if(caller)
-					mech_arms.drop_item(get_turf(caller))
-				else
-					mech_arms.drop_item(get_turf(src))
+				if(caller) mech_arms.force_move(get_turf(caller))
 				mech_arms = null
 				update_sprite()
 			else if(mech_body)
 				caller?.to_chat(span("notice","You remove \the [mech_body.name] from \the [src.name]."))
-				if(caller)
-					mech_body.drop_item(get_turf(caller))
-				else
-					mech_body.drop_item(get_turf(src))
+				mech_body.drop_item(get_turf(src))
+				if(caller) mech_body.force_move(get_turf(caller))
 				mech_body = null
 				update_sprite()
 			else if(mech_legs)
 				caller?.to_chat(span("notice","You remove \the [mech_legs.name] from \the [src.name]."))
 				mech_legs.drop_item(get_turf(src))
-				if(caller)
-					mech_legs.drop_item(get_turf(caller))
-				else
-					mech_legs.drop_item(get_turf(src))
+				if(caller) mech_legs.force_move(get_turf(caller))
 				mech_legs = null
 				update_sprite()
 			else

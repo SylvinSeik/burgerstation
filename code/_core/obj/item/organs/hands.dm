@@ -31,7 +31,7 @@
 
 	health_base = 25
 
-	damage_coefficient = 0.5
+	health_coefficient = 0.5
 
 	has_pain = TRUE
 
@@ -351,13 +351,7 @@
 	damage_type = /damagetype/unarmed/bite/zombie
 
 /obj/item/organ/hand/zombie/get_damage_type(var/atom/attacker,var/atom/victim)
-	var/list/possible_damage_types = list(
-		/damagetype/unarmed/claw = 6,
-		/damagetype/unarmed/bite/zombie = 2,
-		/damagetype/unarmed/fists/grab = 2,
-		/damagetype/unarmed/fists/disarm = 1
-	)
-	return pickweight(possible_damage_types)
+	return damage_type
 
 /obj/item/organ/hand/zombie/left
 	name = "left zombie hand"

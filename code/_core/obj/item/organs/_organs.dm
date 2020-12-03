@@ -59,7 +59,7 @@
 
 	var/bleeding = 0 //How much blood to use per second.
 
-	var/damage_coefficient = 1 //How much should this contribute to the overall health value of an advanced mob?
+	var/health_coefficient = 1 //How much should this contribute to the overall health value of an advanced mob?
 
 	var/has_life = TRUE
 
@@ -163,7 +163,7 @@
 		if(is_advanced(src.loc))
 			var/mob/living/advanced/A = src.loc
 			A.remove_organ(src,FALSE)
-		src.drop_item(T)
+		src.force_move(T)
 
 	update_sprite()
 

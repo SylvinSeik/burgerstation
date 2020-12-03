@@ -10,7 +10,7 @@ var/global/list/armor_slowdown_values = list(
 	COLD = 0.01,
 	BOMB = 0.01,
 	BIO = 0.01,
-	RAD = 0.01,
+	RAD = 0.03,
 	HOLY = 0.01,
 	DARK = 0.01,
 	FATIGUE = 0.02,
@@ -21,11 +21,6 @@ var/global/list/armor_slowdown_values = list(
 
 /obj/item/clothing/proc/calculate_weight()
 
-	var/init_weight = initial(weight)
-
-	if(init_weight != 0)
-		return init_weight
-
 	. = 1
 
 	for(var/k in defense_rating)
@@ -33,7 +28,5 @@ var/global/list/armor_slowdown_values = list(
 			continue
 		. += defense_rating[k] * armor_slowdown_values[k]
 	. *= length(protected_limbs)
-
-	. = max(.,0)
 
 	return .

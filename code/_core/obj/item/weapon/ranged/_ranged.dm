@@ -7,7 +7,6 @@
 	var/max_bursts = 0 //Set to a number greater than 0 to limit automatic fire.
 	var/current_bursts = 0 //Read only.
 	var/shoot_delay = 4 //In deciseconds
-	var/burst_delay = 0 //In deciseconds. Set to 0 to just use shoot_delay*bursts
 	var/next_shoot_time = 0
 
 	var/ranged_damage_type
@@ -107,7 +106,7 @@
 		if(I.flags_tool & FLAG_TOOL_SCREWDRIVER)
 			if(istype(firing_pin))
 				INTERACT_CHECK
-				firing_pin.drop_item(get_turf(src))
+				firing_pin.force_move(get_turf(src))
 				caller.to_chat(span("notice","You remove \the [firing_pin.name] from \the [src.name]."))
 				firing_pin = null
 			else
@@ -204,9 +203,8 @@ obj/item/weapon/ranged/proc/handle_ammo(var/mob/caller)
 obj/item/weapon/ranged/proc/handle_empty(var/mob/caller)
 	caller.to_chat(span("danger","*click*"))
 	if(length(empty_sounds))
-		var/turf/T = get_turf(src)
-		play(pick(empty_sounds),T,range_max = 5)
-		create_alert(VIEW_RANGE,T,caller,ALERT_LEVEL_NOISE)
+		play(pick(empty_sounds),src,range_max = 3)
+		create_alert(VIEW_RANGE,src,caller,ALERT_LEVEL_NOISE)
 
 	return FALSE
 
@@ -225,10 +223,9 @@ obj/item/weapon/ranged/proc/get_shoot_delay(var/mob/caller,var/atom/target,locat
 obj/item/weapon/ranged/proc/play_shoot_sounds(var/mob/caller,var/list/shoot_sounds_to_use = list(),var/shoot_alert_to_use = ALERT_LEVEL_NONE)
 
 	if(length(shoot_sounds_to_use))
-		var/turf/T = get_turf(src)
-		play(pick(shoot_sounds_to_use),T)
+		play(pick(shoot_sounds_to_use),src)
 		if(shoot_alert_to_use)
-			create_alert(VIEW_RANGE,T,caller,shoot_alert_to_use)
+			create_alert(VIEW_RANGE,src,caller,shoot_alert_to_use)
 		return TRUE
 
 	return FALSE
@@ -358,7 +355,7 @@ obj/item/weapon/ranged/proc/shoot(var/mob/caller,var/atom/object,location,params
 	if(automatic && is_player(caller))
 		spawn(next_shoot_time - world.time)
 			var/mob/living/advanced/player/P = caller
-			if(P && P.client && ((params["left"] && P.attack_flags & ATTACK_HELD_LEFT) || (params["right"] && P.attack_flags & ATTACK_HELD_RIGHT) || max_bursts_to_use) )
+			if(P && P.client && ((params["left"] && P.attack_flags & ATTACK_HELD_LEFT) || (params["right"] && P.attack_flags & ATTACK_HELD_RIGHT)) )
 				var/list/screen_loc_parsed = parse_screen_loc(P.client.last_params["screen-loc"])
 				if(!length(screen_loc_parsed))
 					return TRUE
@@ -369,13 +366,12 @@ obj/item/weapon/ranged/proc/shoot(var/mob/caller,var/atom/object,location,params
 				if(T)
 					next_shoot_time = 0 //This is needed.
 					if((max_bursts_to_use <= 0 || current_bursts < (max_bursts_to_use-1)) && shoot(caller,T,P.client.last_location,P.client.last_params,damage_multiplier))
-						if(max_bursts_to_use > 0) //Not above because of shoot needing to run.
-							current_bursts += 1
+						current_bursts += 1
 					else if(max_bursts_to_use > 0)
-						next_shoot_time = world.time + (burst_delay ? burst_delay : shoot_delay*current_bursts)
+						next_shoot_time = world.time + shoot_delay*current_bursts
 						current_bursts = 0
 			else if(max_bursts_to_use > 0)
-				next_shoot_time = world.time + (burst_delay ? burst_delay : shoot_delay*current_bursts)
+				next_shoot_time = world.time + shoot_delay*current_bursts
 				current_bursts = 0
 
 	update_sprite()
@@ -486,28 +482,24 @@ obj/item/weapon/ranged/proc/shoot(var/mob/caller,var/atom/object,location,params
 
 	if(attachment_barrel)
 		var/image/I = new/image(attachment_barrel.icon,"[attachment_barrel.icon_state]_attached")
-		I.plane = FLOAT_PLANE
 		I.pixel_x = attachment_barrel.attachment_offset_x + attachment_barrel_offset_x
 		I.pixel_y = attachment_barrel.attachment_offset_y + attachment_barrel_offset_y
 		add_overlay(I)
 
 	if(attachment_sight)
 		var/image/I = new/image(attachment_sight.icon,"[attachment_sight.icon_state]_attached")
-		I.plane = FLOAT_PLANE
 		I.pixel_x = attachment_sight.attachment_offset_x + attachment_sight_offset_x
 		I.pixel_y = attachment_sight.attachment_offset_y + attachment_sight_offset_y
 		add_overlay(I)
 
 	if(attachment_undermount)
 		var/image/I = new/image(attachment_undermount.icon,"[attachment_undermount.icon_state]_attached")
-		I.plane = FLOAT_PLANE
 		I.pixel_x = attachment_undermount.attachment_offset_x + attachment_undermount_offset_x
 		I.pixel_y = attachment_undermount.attachment_offset_y + attachment_undermount_offset_y
 		add_overlay(I)
 
 	if(attachment_stock)
 		var/image/I = new/image(attachment_stock.icon,"[attachment_stock.icon_state]_attached")
-		I.plane = FLOAT_PLANE
 		I.pixel_x = attachment_stock.attachment_offset_x + attachment_stock_offset_x
 		I.pixel_y = attachment_stock.attachment_offset_y + attachment_stock_offset_y
 		add_overlay(I)

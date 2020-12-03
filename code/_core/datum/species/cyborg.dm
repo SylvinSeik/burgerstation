@@ -37,7 +37,5 @@
 		BODY_KIDNEYS = /obj/item/organ/internal/kidneys
 	)
 
-	health = /health/mob/living/advanced/robotic
-
 /species/reptile/generate_blood_type()
 	return /reagent/blood/robot

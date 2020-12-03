@@ -23,11 +23,9 @@
 		return FALSE
 	*/
 
+
+
 	if(length(href_list))
-		if(href_list["examine"])
-			var/datum/D = locate(href_list["examine"])
-			if(D && !is_atom(D) || (D in view(mob,VIEW_RANGE)))
-				examine(D)
 		if(href_list["spectate"])
 			if(is_observer(mob))
 				var/mob/abstract/observer/O = mob

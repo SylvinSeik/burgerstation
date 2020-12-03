@@ -21,7 +21,7 @@
 	. = ..()
 
 	if(owner && owner.health)
-		owner.health.adjust_loss_smart(tox=.*damage_per_unit*0.75,robotic=FALSE)
+		owner.health.adjust_loss_smart(tox=.*damage_per_unit*0.75)
 
 	return .
 
@@ -30,7 +30,7 @@
 	. = ..()
 
 	if(owner && owner.health)
-		owner.health.adjust_loss_smart(tox=.*damage_per_unit,robotic=FALSE)
+		owner.health.adjust_loss_smart(tox=.*damage_per_unit)
 
 	return .
 

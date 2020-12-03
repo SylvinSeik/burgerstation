@@ -33,7 +33,7 @@
 
 	for(var/k in .)
 		var/obj/projectile/P = k
-		reagents.transfer_reagents_to(P.reagents,reagent_per_shot, caller = caller)
+		reagents.transfer_reagents_to(P.reagents,reagent_per_shot)
 
 	return .
 

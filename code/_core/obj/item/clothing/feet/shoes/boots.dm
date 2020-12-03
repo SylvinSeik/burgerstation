@@ -27,8 +27,6 @@
 
 	value = 60
 
-	speed_bonus = 0
-
 
 
 /obj/item/clothing/feet/shoes/black_boots/left

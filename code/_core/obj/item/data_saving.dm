@@ -17,6 +17,7 @@
 		if(IB.color) .[id]["color"] = IB.color
 		if(IB.blend) .[id]["blend"] = IB.blend
 		if(IB.special_type) .[id]["special_type"] = IB.special_type
+		//if(IB.layer) .[id]["layer"] = IB.layer Should not be saved because of the use of FLOAT_PLANE
 
 	return .
 
@@ -71,7 +72,7 @@
 	INITIALIZE(I)
 	I.load_item_data_post(P,object_data)
 	FINALIZE(I)
-	I.drop_item(loc,silent=TRUE)
+	I.force_move(loc)
 	I.update_sprite()
 
 	return I
@@ -106,7 +107,7 @@
 				inventory_data = IN.get_inventory_data(save_inventory)
 			catch(var/exception/e)
 				log_error("Failed to save inventory data of [src.get_debug_name()]. Some information may be lost.")
-				log_error("Save Error: [e] on [e.file]:[e.line]\n[e.desc]!")
+				log_error("Save Error: [e] on [e.file]:[e.line]!")
 			.["inventories"][i] = inventory_data
 	if(soul_bound)
 		.["soul_bound"] = soul_bound
@@ -183,22 +184,22 @@
 		if(inventory_data["held"])
 			for(var/i=1,i<=length(inventory_data["held"]),i++)
 				var/obj/item/I = load_and_create(P,inventory_data["held"][i],get_turf(src))
-				if(I && !src.add_held_object(I,TRUE,TRUE,silent=TRUE))
+				if(I && !src.add_held_object(I,TRUE,TRUE))
 					log_error("WARNING: Could not add \the [I.get_debug_name()] to \the [src.get_debug_name()]!")
-					I.drop_item(get_step(P,P.dir),silent=TRUE)
+					I.force_move(get_turf(P))
 
 		if(inventory_data["worn"])
 			for(var/i=1,i<=length(inventory_data["worn"]),i++)
 				var/obj/item/I = load_and_create(P,inventory_data["worn"][i],get_turf(src))
-				if(I && !src.add_worn_object(I,TRUE,TRUE,silent=TRUE))
+				if(I && !src.add_worn_object(I,TRUE,TRUE))
 					log_error("WARNING: Could not add \the [I.get_debug_name()] to \the [src.get_debug_name()]!")
-					I.drop_item(get_step(P,P.dir),silent=TRUE)
+					I.force_move(get_turf(P))
 	else
 		for(var/i=1,i<=length(inventory_data),i++)
 			var/obj/item/I = load_and_create(P,inventory_data[i],get_turf(src))
-			if(I && !src.add_object(I,TRUE,TRUE,silent=TRUE))
+			if(I && !src.add_object(I,TRUE,TRUE))
 				log_error("WARNING: Could not add \the [I.get_debug_name()] to \the [src.get_debug_name()]!")
-				I.drop_item(get_step(P,P.dir),silent=TRUE)
+				I.force_move(get_turf(P))
 
 
 	return TRUE

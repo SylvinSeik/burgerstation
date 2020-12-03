@@ -104,23 +104,28 @@
 	return ..()
 
 /obj/item/rcd/proc/insert_disk(var/mob/caller,var/obj/item/disk/desired_disk,var/silent=FALSE)
+
+	var/obj/item/disk/old_disk
 	if(rcd_disk)
-		if(caller && !silent) caller.to_chat("There is already a [rcd_disk.name] installed in \the [src.name]!")
-		return null
+		old_disk = eject_disk(caller,TRUE)
+		if(caller && !silent)
+			caller.to_chat("You swap \the [old_disk.name] for \the [desired_disk.name].")
+
 	desired_disk.drop_item(src)
 	rcd_disk = desired_disk
-	if(caller && !silent) caller.to_chat("You insert \the [rcd_disk.name] into \the [src.name] and download the data onto the RCD.")
-	return rcd_disk
+	if(caller && !silent)
+		caller.to_chat("You insert \the [rcd_disk.name] into \the [src.name] and download the data onto the RCD.")
+
+	return old_disk
 
 /obj/item/rcd/proc/eject_disk(var/mob/caller,var/silent=FALSE)
-	if(!rcd_disk)
-		caller.to_chat("There is no disk to eject from \the [src.name]!")
-		return null
-	if(caller && !silent) caller.to_chat("You remove \the [rcd_disk.name] from \the [src.name].")
-	rcd_disk.drop_item(get_turf(src))
-	. = rcd_disk
+	var/obj/item/disk/old_disk
+	old_disk = rcd_disk
+	rcd_disk.force_move(get_turf(src))
 	rcd_disk = null
-	return .
+	if(caller && !silent)
+		caller.to_chat("You remove \the [old_disk.name] from \the [src.name].")
+	return old_disk
 
 /obj/item/rcd/clicked_on_by_object(var/mob/caller as mob,var/atom/object,location,control,params) //The src was clicked on by the object
 
@@ -133,11 +138,10 @@
 	if(istype(object,/obj/item/disk/) && is_inventory(object.loc))
 		var/obj/hud/inventory/I = object.loc
 		var/obj/item/disk/D = object
-		var/obj/item/disk/old_disk
-		if(rcd_disk) old_disk = eject_disk(caller)
-		if(!rcd_disk)
-			insert_disk(caller,D)
-			if(old_disk) I.add_object(old_disk)
+		D.drop_item(src.loc)
+		var/obj/item/disk/existing_disk = insert_disk(caller,D)
+		if(existing_disk)
+			I.add_object(existing_disk)
 		return TRUE
 
 	return ..()

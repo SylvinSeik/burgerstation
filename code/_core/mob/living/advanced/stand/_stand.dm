@@ -148,7 +148,7 @@
 
 	. = ..()
 
-	var/species/S = SPECIES(species)
+	var/species/S = all_species[species]
 	var/skin_color = random_color()
 	var/hair_color = random_color()
 	change_organ_visual("skin", desired_color = skin_color)

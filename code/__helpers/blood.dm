@@ -9,7 +9,7 @@
 		return FALSE
 
 	desired_effect = new desired_effect(desired_loc,desired_color,desired_x,desired_y)
-	desired_loc.blood_level++
+	desired_loc.blood_level += 1
 
 	queue_delete(desired_effect,ITEM_DELETION_TIME_DROPPED,TRUE)
 

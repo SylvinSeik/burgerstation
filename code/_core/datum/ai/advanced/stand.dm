@@ -16,12 +16,15 @@
 /ai/advanced/stand/handle_movement_roaming()
 	return FALSE
 
+/ai/advanced/stand/handle_movement_crowding()
+	return FALSE
+
 /ai/advanced/stand/set_objective(var/mob/living/L)
 	. = ..()
 	owner.set_dir(owner.dir,TRUE)
 	return .
 
-/ai/advanced/stand/is_enemy(var/atom/A,var/safety_check=TRUE)
+/ai/advanced/stand/is_enemy(var/atom/A)
 	if(is_living(A))
 		var/mob/living/L = A
 		if(L.stand && L.stand.linked_stand == owner)
@@ -33,13 +36,13 @@
 	if(L.dead)
 		return FALSE
 
-	if(is_enemy(L,FALSE))
+	if(is_enemy(L))
 		return FALSE
 
 	if(L.immortal && !ignore_immortal)
 		return FALSE
 
-	if(timeout_threshold && L.client && L.client.inactivity >= DECISECONDS_TO_TICKS(timeout_threshold))
+	if(timeout_threshold && L.client && L.client.inactivity >= timeout_threshold)
 		return FALSE
 
 	if(!L.can_be_attacked(owner))
@@ -48,10 +51,10 @@
 	return TRUE
 
 
-/ai/advanced/stand/is_enemy(var/atom/A,var/safety_check=TRUE)
+/ai/advanced/stand/is_enemy(var/atom/A)
 	if(A == owner)
 		return FALSE
-	if(!safety_check)
+	if(istype(owner,/mob/living/advanced/stand/))
 		var/mob/living/advanced/stand/S = owner
 		if(A == S.owner)
 			return FALSE

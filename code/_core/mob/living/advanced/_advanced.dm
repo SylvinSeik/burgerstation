@@ -76,7 +76,7 @@
 
 	death_threshold = -50
 
-	movement_delay = DECISECONDS_TO_TICKS(1.75)
+	movement_delay = DECISECONDS_TO_TICKS(2)
 
 	var/handcuffed = FALSE
 	var/handcuff_break_counter = 0
@@ -130,7 +130,7 @@
 /mob/living/advanced/Finalize()
 
 	if(blood_type == /reagent/blood) //Uninitialized blood.
-		var/species/S = SPECIES(species)
+		var/species/S = all_species[species]
 		blood_type = S.generate_blood_type()
 
 	. = ..()
@@ -140,12 +140,10 @@
 	return .
 
 /mob/living/advanced/on_crush()
-	if(driving)
-		return FALSE
 	drop_all_items(get_turf(src))
 	return ..()
 
-/mob/living/advanced/proc/update_clothes()
+/mob/living/advanced/proc/update_clothes() //Avoid using?
 
 	tracked_hidden_organs = list()
 
@@ -178,20 +176,15 @@
 		sight |= E.sight_mod
 		vision |= E.vision_mod
 		see_invisible = max(E.see_invisible,see_invisible)
-		see_in_dark = max(see_in_dark,E.see_in_dark)
 
 	for(var/obj/item/clothing/glasses/G in worn_objects)
 		sight |= G.sight_mod
 		vision |= G.vision_mod
 		see_invisible = max(G.see_invisible,see_invisible)
-		see_in_dark = max(see_in_dark,G.see_in_dark)
 
 	return .
 
 /mob/living/advanced/set_dir(var/desired_dir,var/force=FALSE)
-
-	if(driving)
-		desired_dir = driving.dir
 
 	if(!force && grabbing_hand)
 		return FALSE
@@ -217,16 +210,11 @@
 	if(!force && !finalized)
 		return FALSE //Don't want to call this too much during initializations.
 
-	if(should_update_weight)
-		update_weight()
-	if(should_update_slowdown)
-		update_slowdown()
-	if(should_update_eyes)
-		update_eyes()
-	if(should_update_protection)
-		update_protection()
-	if(should_update_clothes)
-		update_clothes()
+	if(should_update_weight) update_weight()
+	if(should_update_slowdown) update_slowdown()
+	if(should_update_eyes) update_eyes()
+	if(should_update_protection) update_protection()
+	if(should_update_clothes) update_clothes()
 
 	return TRUE
 
@@ -241,21 +229,15 @@
 
 	weight = .
 
-	weight_max = CEILING(200 + get_attribute_power(ATTRIBUTE_ENDURANCE)*300,5) //Skyrim levels of memes.
+	weight_max = (200 + get_attribute_power(ATTRIBUTE_STRENGTH)*300) //Skyrim levels of memes.
 
 	return .
 
 /mob/living/advanced/proc/update_slowdown()
-
-	. = 1
-
-	for(var/obj/item/clothing/C in worn_objects)
-		. -= C.speed_bonus
-
-	. = FLOOR(.,0.01)
-
+	//https://www.desmos.com/calculator/9oyrocojgp
+	var/cucumber = (weight/weight_max)
+	. = 2 - (1-cucumber)**0.2
 	slowdown_mul = .
-
 	return .
 
 /mob/living/advanced/New(loc,desired_client,desired_level_multiplier)
@@ -298,7 +280,7 @@
 /mob/living/advanced/proc/equip_objects_in_list(var/list/clothing_list)
 	for(var/k in clothing_list)
 		var/obj/item/clothing/C = k
-		C.quick_equip(src,silent=TRUE)
+		C.quick_equip(src)
 
 mob/living/advanced/Login()
 	. = ..()
@@ -327,10 +309,6 @@ mob/living/advanced/Login()
 	. = ..()
 
 	apply_mob_parts(TRUE,TRUE,TRUE)
-
-	var/species/S = SPECIES(species)
-	if(S && S.health)
-		health = S.health
 
 	return .
 
@@ -388,11 +366,10 @@ mob/living/advanced/Login()
 
 	return TRUE
 
-/* UNUSED
-/mob/living/advanced/proc/add_worn_item(var/obj/item/C,var/slient=FALSE)
+/mob/living/advanced/proc/add_worn_item(var/obj/item/C)
 	for(var/k in inventory)
 		var/obj/hud/inventory/I = k
-		if(I.add_worn_object(C,FALSE,silent=FALSE))
+		if(I.add_worn_object(C,FALSE))
 			return TRUE
 
 	return FALSE
@@ -404,20 +381,19 @@ mob/living/advanced/Login()
 			return TRUE
 
 	return FALSE
-*/
 
 /mob/living/advanced/proc/add_species_languages()
 
 	known_languages.Cut()
 
-	var/species/S = SPECIES(species)
+	var/species/S = all_species[species]
 
 	for(var/language in S.languages)
 		known_languages[language] = TRUE
 
 /mob/living/advanced/proc/add_species_colors()
 
-	var/species/S = SPECIES(species)
+	var/species/S = all_species[species]
 
 	if(S.default_color_skin)
 		change_organ_visual("skin", desired_color = S.default_color_skin)
@@ -450,7 +426,7 @@ mob/living/advanced/Login()
 
 /mob/living/advanced/proc/update_species()
 
-	var/species/S = SPECIES(species)
+	var/species/S = all_species[species]
 
 	if(S.genderless)
 		gender = NEUTER
@@ -479,24 +455,24 @@ mob/living/advanced/Login()
 
 	return ..()
 
-/mob/living/advanced/proc/put_in_hands(var/obj/item/I,var/left = FALSE,var/silent=FALSE)
+/mob/living/advanced/proc/put_in_hands(var/obj/item/I,var/left = FALSE)
 
 	if(left_hand && right_hand)
 		if(left)
 			if(left_hand.can_hold_object(I,FALSE))
-				return left_hand.add_object(I,silent=silent)
+				return left_hand.add_object(I)
 			else if(right_hand.can_hold_object(I,FALSE))
-				return right_hand.add_object(I,silent=silent)
+				return right_hand.add_object(I)
 		else
 			if(right_hand.can_hold_object(I,FALSE))
-				return right_hand.add_object(I,silent=silent)
+				return right_hand.add_object(I)
 			else if(left_hand.can_hold_object(I,FALSE))
-				return left_hand.add_object(I,silent=silent)
+				return left_hand.add_object(I)
 	else
 		if(left_hand)
-			return left_hand.add_object(I,silent=silent)
+			return left_hand.add_object(I)
 		else if(right_hand)
-			return right_hand.add_object(I,silent=silent)
+			return right_hand.add_object(I)
 
 	return FALSE
 
@@ -519,7 +495,7 @@ mob/living/advanced/Login()
 	return FALSE
 
 /mob/living/advanced/mod_speech(var/text)
-	var/species/S = SPECIES(species)
+	var/species/S = all_species[species]
 	if(!S)
 		return text
 	return ..(S.mod_speech(src,text))

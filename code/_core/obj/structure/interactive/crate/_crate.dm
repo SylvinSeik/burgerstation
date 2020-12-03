@@ -85,7 +85,7 @@
 /obj/structure/interactive/crate/clicked_on_by_object(var/mob/caller,var/atom/object,location,control,params)
 
 	INTERACT_CHECK
-	SPAM_CHECK(10)
+	SPAM_CHECK
 
 	if(!(caller.attack_flags & ATTACK_GRAB))
 		toggle(caller)
@@ -99,8 +99,6 @@
 			CHECK_TICK(50,FPS_SERVER)
 			var/atom/movable/M = k
 			if(M == src || M.anchored)
-				continue
-			if(M.loc != src.loc)
 				continue
 			M.force_move(src)
 			M.pixel_x = initial(M.pixel_x)
@@ -150,8 +148,6 @@
 		var/atom/movable/M = k
 		CHECK_TICK(50,FPS_SERVER)
 		if(M == src)
-			continue
-		if(M.loc != src.loc)
 			continue
 		if(!can_store(M))
 			continue
@@ -207,7 +203,7 @@
 				CREATE(/obj/item/magazine/rifle_308,src.loc)
 		if(4 to 6)
 			for(var/i=1,i<=rand(2,4),i++)
-				CREATE(/obj/item/weapon/ranged/bullet/magazine/shotgun/bulldog,src.loc)
+				CREATE(/obj/item/weapon/ranged/bullet/magazine/shotgun/bull,src.loc)
 			for(var/i=1,i<=rand(6,12),i++)
 				CREATE(/obj/item/magazine/shotgun_auto,src.loc)
 		if(7)

@@ -22,17 +22,31 @@
 
 	return TRUE
 
+/*
+/obj/hud/button/cash_money/update_icon()
+
+	icon = initial(icon)
+	icon_state = initial(icon_state)
+
+	var/icon/I = new/icon(icon,icon_state)
+
+	amount = round(amount)
+
+	maptext = "<div align='right'>[amount]</div>"
+
+	swap_colors(I)
+
+	icon = I
+*/
 
 /obj/hud/button/cash_money/update_sprite()
 	amount = round(amount)
-
-
-	maptext = "<div align='right'>[nice_number(amount)]</div>"
+	maptext = "<div align='right'>[amount]</div>"
 	return ..()
 
 /obj/hud/button/cash_money/proc/update_stats(var/new_value=0)
 
-	new_value = max(new_value,0)
+	new_value = clamp(new_value,0,99999)
 
 	if(amount != new_value)
 		amount = new_value
@@ -72,7 +86,7 @@
 
 /obj/hud/button/microstransactions/proc/update_stats(var/new_value=0)
 
-	new_value = max(new_value,0)
+	new_value = clamp(new_value,0,99999)
 
 	if(amount != new_value)
 		amount = new_value
@@ -83,7 +97,7 @@
 
 /obj/hud/button/microstransactions/update_sprite()
 	amount = round(amount)
-	maptext = "<div align='right'>[nice_number(amount)]</div>"
+	maptext = "<div align='right'>[amount]</div>"
 	return ..()
 
 /obj/hud/button/toggle_cash_money

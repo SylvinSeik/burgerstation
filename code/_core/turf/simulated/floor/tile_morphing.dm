@@ -117,9 +117,6 @@
 /turf/simulated/floor/tile/morphing/hydroponics
 	color = COLOR_GREEN
 
-/turf/simulated/floor/tile/morphing/mining
-	color = COLOR_SCIENCE
-
 /turf/simulated/floor/tile/morphing/medical
 	color = COLOR_MEDICAL
 

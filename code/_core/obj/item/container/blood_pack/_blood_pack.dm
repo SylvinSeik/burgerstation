@@ -19,7 +19,7 @@
 /obj/item/container/blood_pack/get_examine_list(var/mob/examiner)
 	return ..() + div("notice",reagents.get_contents_english())
 
-/obj/item/container/blood_pack/drop_item(var/atom/desired_loc,var/pixel_x_offset = 0,var/pixel_y_offset = 0,var/silent=FALSE)
+/obj/item/container/blood_pack/drop_item(var/atom/desired_loc,var/pixel_x_offset = 0,var/pixel_y_offset = 0)
 	. = ..()
 	update_sprite()
 	return .
@@ -153,14 +153,14 @@
 
 
 /obj/item/container/blood_pack/full/o_negative/
-	name = "blood pack (O-)"
+	label = "O-"
 
 /obj/item/container/blood_pack/full/o_negative/Generate()
 	reagents.add_reagent(/reagent/blood/human/o_negative,reagents.volume_max)
 	return ..()
 
 /obj/item/container/blood_pack/full/reptile/
-	name = "blood pack (L)"
+	label = "L"
 
 /obj/item/container/blood_pack/full/reptile/Generate()
 	reagents.add_reagent(/reagent/blood/reptile,reagents.volume_max)

@@ -19,7 +19,7 @@
 
 /reagent/blood/on_metabolize_stomach(var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1)
 	. = ..()
-	if(owner.health) owner.health.adjust_loss_smart(tox=.*0.25,robotic=FALSE)
+	if(owner.health) owner.health.adjust_loss_smart(tox=.*0.25)
 	return .
 
 /reagent/blood/on_metabolize_blood(var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1)
@@ -34,7 +34,7 @@
 				L.blood_volume += .
 				L.queue_health_update = TRUE
 		else
-			if(owner.health) owner.health.adjust_loss_smart(tox=.*1,robotic=FALSE)
+			if(owner.health) owner.health.adjust_loss_smart(tox=.*1)
 
 	return .
 
@@ -120,8 +120,6 @@
 		/reagent/blood/robot = TRUE
 	)
 
-	color = COLOR_BLACK
-
 /reagent/blood/xenomorph
 	name = "Xenomorph Blood"
 
@@ -129,13 +127,9 @@
 		/reagent/blood/xenomorph = TRUE
 	)
 
-	color = "#B6FF00"
-
 /reagent/blood/reptile
 	name = "Reptile Blood"
 
 	compatible_blood = list(
 		/reagent/blood/reptile = TRUE
 	)
-
-	color = "#88002B"

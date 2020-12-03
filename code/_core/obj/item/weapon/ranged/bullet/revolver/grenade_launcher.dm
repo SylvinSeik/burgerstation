@@ -1,5 +1,5 @@
 /obj/item/weapon/ranged/bullet/revolver/grenade_launcher
-	name = "\improper Grenade Thumper"
+	name = "M79 Thumper"
 	desc = "Blooper"
 	desc_extended = "an old grenade launcher from a past era, uses 40mm grenades."
 	icon = 'icons/obj/item/weapons/ranged/grenade_launcher.dmi'
@@ -17,8 +17,9 @@
 
 	shoot_sounds = list('sound/weapons/grenade_launcher/thump.ogg')
 
+	slowdown_mul_held = HELD_SLOWDOWN_SHOTGUN
+
 	size = SIZE_4
-	weight = 12
 
 	bullet_length_min = 45
 	bullet_length_best = 46
@@ -62,7 +63,7 @@
 	attachment_undermount_offset_x = 0 - 16
 	attachment_undermount_offset_y = 0 - 16
 
-	firing_pin = /obj/item/firing_pin/electronic/iff/nanotrasen
+	firing_pin = /obj/item/firing_pin/electronic/iff/deathsquad
 
 /obj/item/weapon/ranged/bullet/revolver/grenade_launcher/get_base_spread()
 	return 0.05

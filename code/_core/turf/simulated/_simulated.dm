@@ -71,21 +71,15 @@ var/global/list/blood_turfs = list()
 	return .
 
 
-/turf/proc/is_occupied(var/plane_min=-INFINITY,var/plane_max=INFINITY,var/check_under_tile=FALSE)
+/turf/proc/is_occupied()
 
 	for(var/atom/movable/A in src.contents)
-		if(A.plane < plane_min || A.plane > plane_max)
-			continue
 		if(istype(A,/obj/effect/temp/construction/))
 			return A
 		if(is_living(A))
 			return A
-		if(isobj(A))
-			var/obj/O = A
-			if(check_under_tile && O.under_tile)
-				return O
-			if(is_structure(O))
-				return O
+		if(is_structure(A))
+			return A
 
 	return null
 
@@ -253,8 +247,7 @@ var/global/list/blood_turfs = list()
 	icon = I
 	pixel_x = (32 - I.Width())/2
 	pixel_y = (32 - I.Height())/2
-
-	return TRUE
+	//layer = initial(layer) + 0.1
 
 /turf/simulated/update_icon()
 

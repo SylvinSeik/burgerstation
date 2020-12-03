@@ -1,6 +1,6 @@
 /mob/living/simple/npc/bubblegum
 	name = "bubblegum"
-	boss_icon_state = "bubblegum"
+	id = "bubblegum"
 	icon = 'icons/mob/living/simple/lavaland/bubblegum.dmi'
 	icon_state = "living"
 	damage_type = /damagetype/unarmed/claw/
@@ -14,7 +14,7 @@
 	var/charge_steps = 0
 	var/charge_dir = 0
 
-	health_base = 4000
+	health_base = 2500
 
 	move_delay = DECISECONDS_TO_TICKS(2)
 
@@ -73,7 +73,7 @@
 
 /mob/living/simple/npc/bubblegum/post_death()
 	. = ..()
-	CREATE(/obj/structure/interactive/crate/necro/bubblegum,get_turf(src))
+	CREATE(/obj/structure/interactive/crate/necro,get_turf(src))
 	charge_steps = 0
 	charge_dir = 0
 	icon_state = "dead"

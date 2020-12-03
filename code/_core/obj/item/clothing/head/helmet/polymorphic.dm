@@ -48,10 +48,3 @@
 		"ears" = COLOR_MEDICAL,
 		"stripe" = COLOR_MEDICAL
 	)
-
-/obj/item/clothing/head/helmet/polymorphic/space_military
-	polymorphs = list(
-		"base" = COLOR_WHITE,
-		"ears" = COLOR_BLACK,
-		"stripe" = COLOR_BLACK
-	)

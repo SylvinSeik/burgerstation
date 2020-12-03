@@ -4,23 +4,12 @@
 	overdose_threshold = OVERDOSE_THRESHOLD_MEDICINE
 	value = 1
 
-	var/experience_per_unit = 0 //Medical XP per unit added.
-
-/reagent/medicine/on_add_living(var/mob/living/L,var/reagent_container/container,var/amount_added=0,var/current_volume=0,var/mob/living/caller)
-
-	. = ..()
-
-	if(!L.dead && experience_per_unit && caller && is_player(caller))
-		caller.add_skill_xp(SKILL_MEDICINE,experience_per_unit*.)
-
-	return .
-
 /reagent/medicine/on_overdose(var/atom/original_owner,var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1,var/metabolism_amount=0)
 
 	. = ..()
 
 	if(original_owner && original_owner.health)
-		original_owner.health.adjust_loss_smart(tox=.,robotic=FALSE)
+		original_owner.health.adjust_loss_smart(tox=.)
 
 	return .
 
@@ -34,7 +23,6 @@
 
 	metabolism_blood = 0.5
 	metabolism_stomach = 0.25
-	experience_per_unit = 2.5
 
 	value = 1.25
 
@@ -68,7 +56,6 @@
 
 	metabolism_blood = 0.5
 	metabolism_stomach = 0.25
-	experience_per_unit = 5
 
 	value = 3
 
@@ -102,7 +89,6 @@
 
 	metabolism_blood = 0.5
 	metabolism_stomach = 0.25
-	experience_per_unit = 2.5
 
 	value = 1
 
@@ -134,7 +120,6 @@
 
 	metabolism_blood = 0.5
 	metabolism_stomach = 0.25
-	experience_per_unit = 2.5
 
 	value = 1.25
 
@@ -157,11 +142,11 @@
 
 	return .
 
-/reagent/medicine/dexalin
+/reagent/medicine/dexalin //Shit chem, rework.
 	name = "Dexalin"
 	desc = "Blue for oxy."
-	color = "#1111FF"
-	alpha = 150
+	color = "#0000FF"
+	alpha = 200
 
 	flavor = "bitterness"
 
@@ -170,19 +155,19 @@
 
 	value = 1.5
 
-/reagent/medicine/dexalin/on_add_living(var/mob/living/L,var/reagent_container/container,var/amount_added=0,var/current_volume=0)
-
+/reagent/medicine/dexalin/on_metabolize_blood(var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1)
 	. = ..()
 
-	L.blood_oxygen += 0.2
+	if(owner && owner.health)
+		owner.health.adjust_loss_smart(oxy=.*-5)
 
 	return .
 
-/reagent/medicine/dexalin/on_remove_living(var/mob/living/L,var/reagent_container/container)
-
+/reagent/medicine/dexalin/on_metabolize_stomach(var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1)
 	. = ..()
 
-	L.blood_oxygen -= 0.2
+	if(owner && owner.health)
+		owner.health.adjust_loss_smart(oxy=.*-4)
 
 	return .
 
@@ -196,7 +181,6 @@
 
 	metabolism_blood = 0.5
 	metabolism_stomach = 0.25
-	experience_per_unit = 4
 
 	value = 1.5
 
@@ -235,7 +219,6 @@
 
 	metabolism_blood = 0.5
 	metabolism_stomach = 0.25
-	experience_per_unit = 3
 
 	value = 2
 
@@ -280,8 +263,6 @@
 
 	liquid = -0.5
 
-	experience_per_unit = 5
-
 /reagent/medicine/silver_sulfadiazine/on_splash(var/reagent_container/container,var/mob/caller,var/atom/target,var/volume_to_splash,var/strength_mod=1)
 
 	. = ..()
@@ -297,10 +278,10 @@
 
 	if(current_volume == 0 && container.owner && container.owner.health) //Added for the first time.
 		. *= 0.5
-		container.owner.health.adjust_loss_smart(burn=.*-10,robotic=FALSE)
+		container.owner.health.adjust_loss_smart(burn=.*-10)
 		if(is_living(container.owner.loc))
 			var/mob/living/L = container.owner.loc
-			L.do_emote("scream")
+			L.emote("scream")
 
 	return .
 
@@ -311,11 +292,11 @@
 		if(is_living(owner.loc))
 			var/mob/living/L = owner.loc
 			if(L.health)
-				owner.health.adjust_loss_smart(burn=.*-5,robotic=FALSE)
+				owner.health.adjust_loss_smart(burn=.*-5,update=FALSE)
 				L.burn_regen_buffer += 3*.
 				L.health_regen_delay = max(0,L.health_regen_delay - .*2)
 		else
-			owner.health.adjust_loss_smart(burn=.*-5,robotic=FALSE)
+			owner.health.adjust_loss_smart(burn=.*-5)
 
 
 	return .
@@ -335,8 +316,6 @@
 
 	liquid = -0.5
 
-	experience_per_unit = 5
-
 /reagent/medicine/styptic_powder/on_splash(var/reagent_container/container,var/mob/caller,var/atom/target,var/volume_to_splash,var/strength_mod=1)
 
 	. = ..()
@@ -353,10 +332,10 @@
 
 	if(current_volume == 0 && container.owner && container.owner.health) //Added for the first time.
 		. *= 0.5
-		container.owner.health.adjust_loss_smart(brute=.*-10,robotic=FALSE)
+		container.owner.health.adjust_loss_smart(brute=.*-10)
 		if(is_living(container.owner.loc))
 			var/mob/living/L = container.owner.loc
-			L.do_emote("scream")
+			L.emote("scream")
 
 	return .
 
@@ -368,12 +347,12 @@
 		if(is_living(owner.loc))
 			var/mob/living/L = owner.loc
 			if(L.health)
-				owner.health.adjust_loss_smart(brute=.*-5,robotic=FALSE)
+				owner.health.adjust_loss_smart(brute=.*-5,update=FALSE)
 				L.brute_regen_buffer += 3*.
 				L.health_regen_delay = max(0,L.health_regen_delay - .*2)
 
 		else
-			owner.health.adjust_loss_smart(brute=.*-5,robotic=FALSE)
+			owner.health.adjust_loss_smart(brute=.*-5)
 
 	return .
 
@@ -387,8 +366,6 @@
 	value = 5
 	liquid = -0.5
 	alpha = 255
-
-	experience_per_unit = 5
 
 
 /reagent/medicine/synthflesh/on_splash(var/reagent_container/container,var/mob/caller,var/atom/target,var/volume_to_splash,var/strength_mod=1)
@@ -406,7 +383,7 @@
 	. = ..()
 
 	if(current_volume == 0 && container.owner && container.owner.health) //Added for the first time.
-		container.owner.health.adjust_loss_smart(brute=.*-10,burn=.*-10,tox=.,robotic=FALSE)
+		container.owner.health.adjust_loss_smart(brute=.*-10,burn=.*-10,tox=.)
 		. = 0
 
 	return .
@@ -431,29 +408,31 @@
 	color = "#880000"
 	alpha = 225
 	flavor = "pure speed"
-	metabolism_stomach = 5/60 // Lasts a minute per 5u
-	metabolism_blood = 10/60 // Lasts a minute per 10u
+	metabolism_blood = 1
 	var/strength = 100
-
-	experience_per_unit = 1
+	var/duration = 10 * 60 //Deciseconds, 1 Minute
 
 	value = 2
 
-/reagent/medicine/adrenaline/on_add_living(var/mob/living/L,var/reagent_container/container,var/amount_added=0,var/current_volume=0)
+/reagent/medicine/adrenaline/on_add(var/reagent_container/container,var/amount_added=0,var/current_volume=0)
 
 	. = ..()
 
-	if(L.get_status_effect_magnitude(ADRENALINE) <= strength)
-		L.add_status_effect(ADRENALINE,strength,-1)
+	if(is_living(container.owner))
+		var/mob/living/L = container.owner
+		if(L.get_status_effect_magnitude(ADRENALINE) <= strength)
+			L.add_status_effect(ADRENALINE,strength,-1)
 
 	return .
 
-/reagent/medicine/adrenaline/on_remove_living(var/mob/living/L,var/reagent_container/container)
+/reagent/medicine/adrenaline/on_remove(var/reagent_container/container)
 
 	. = ..()
 
-	if(L.get_status_effect_magnitude(ADRENALINE) <= strength)
-		L.remove_status_effect(ADRENALINE)
+	if(is_living(container.owner))
+		var/mob/living/L = container.owner
+		if(L.get_status_effect_magnitude(ADRENALINE) <= strength)
+			L.remove_status_effect(ADRENALINE)
 
 	return .
 
@@ -466,14 +445,16 @@
 	alpha = 225
 	flavor = "bandaids"
 	strength = 50
+	duration = 10 * 60 //1 minute.
 
 	value = 1.5
 
-/reagent/medicine/adrenaline/epinephrine/on_add_living(var/mob/living/L,var/reagent_container/container,var/amount_added=0,var/current_volume=0)
+/reagent/medicine/adrenaline/epinephrine/on_add(var/reagent_container/container,var/amount_added=0,var/current_volume=0)
 
 	. = ..()
 
-	if(. + current_volume >= 10)
+	if(. + current_volume >= 10 && is_living(container.owner))
+		var/mob/living/L = container.owner
 		if(L.dead && !L.check_death() && L.is_player_controlled() && !L.suicide)
 			L.revive()
 			L.visible_message("\The [L.name] jolts to life!")
@@ -496,8 +477,6 @@
 	metabolism_blood = METABOLISM_BLOOD * 10
 	metabolism_stomach = METABOLISM_BLOOD * 10
 
-	experience_per_unit = 5
-
 	value = 3
 
 /reagent/medicine/health_potion/on_metabolize_blood(var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1)
@@ -505,7 +484,7 @@
 	. = ..()
 
 	if(owner && owner.health)
-		owner.health.adjust_loss_smart(brute=.*-3,burn=.*-3,tox=.*-3,oxy=.*-3,robotic = FALSE)
+		owner.health.adjust_loss_smart(brute=.*-5,burn=.*-5,tox=.*-5,oxy=.*-5)
 
 	return .
 
@@ -514,7 +493,7 @@
 	. = ..()
 
 	if(owner && owner.health)
-		owner.health.adjust_loss_smart(brute=.*-3,burn=.*-3,tox=.*-3,oxy=.*-3,robotic = FALSE)
+		owner.health.adjust_loss_smart(brute=.*-5,burn=.*-5,tox=.*-5,oxy=.*-5)
 
 	return .
 
@@ -531,15 +510,13 @@
 	metabolism_blood = METABOLISM_BLOOD * 10
 	metabolism_stomach = METABOLISM_BLOOD * 10
 
-	experience_per_unit = 5
-
 	value = 3
 
 /reagent/medicine/stamina_potion/on_metabolize_blood(var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1)
 	. = ..()
 
 	if(owner && owner.health)
-		owner.health.adjust_stamina(.*5)
+		owner.health.adjust_stamina(.*10)
 
 	return .
 
@@ -547,7 +524,7 @@
 	. = ..()
 
 	if(owner && owner.health)
-		owner.health.adjust_stamina(.*5)
+		owner.health.adjust_stamina(.*10)
 
 	return .
 
@@ -564,15 +541,13 @@
 	metabolism_blood = METABOLISM_BLOOD * 10
 	metabolism_stomach = METABOLISM_BLOOD * 10
 
-	experience_per_unit = 5
-
 	value = 3
 
 /reagent/medicine/mana_potion/on_metabolize_blood(var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1)
 	. = ..()
 
 	if(owner && owner.health)
-		owner.health.adjust_mana(.*5)
+		owner.health.adjust_mana(.*10)
 
 	return .
 
@@ -580,7 +555,7 @@
 	. = ..()
 
 	if(owner && owner.health)
-		owner.health.adjust_mana(.*5)
+		owner.health.adjust_mana(.*10)
 
 	return .
 
@@ -597,8 +572,6 @@
 
 	metabolism_blood = METABOLISM_BLOOD * 5
 	metabolism_stomach = METABOLISM_BLOOD * 5
-
-	experience_per_unit = 2
 
 	value = 3
 
@@ -640,8 +613,6 @@
 
 	value = 12
 
-	experience_per_unit = 2
-
 	var/list/purge_blacklist = list(/reagent/toxin/zombie_toxin = TRUE)
 
 /reagent/medicine/purge/on_metabolize_blood(var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1)
@@ -656,7 +627,7 @@
 			var/reagent/R = REAGENT(reagent_id)
 			if(R.type == src.type)
 				continue
-			owner.health.adjust_loss_smart(tox=container.remove_reagent(reagent_id,.*1.5), robotic = FALSE)
+			owner.health.adjust_tox_loss(container.remove_reagent(reagent_id,.*1.5))
 		L.queue_health_update = TRUE
 
 	return .
@@ -673,7 +644,7 @@
 			var/reagent/R = REAGENT(reagent_id)
 			if(R.type == src.type)
 				continue
-			owner.health.adjust_loss_smart(tox=container.remove_reagent(reagent_id,.*1.5),robotic = FALSE)
+			owner.health.adjust_tox_loss(container.remove_reagent(reagent_id,.*1.5))
 		L.queue_health_update = TRUE
 
 	return .
@@ -688,8 +659,6 @@
 	flavor = "old shoes"
 
 	var/list/purge_blacklist = list(/reagent/toxin/zombie_toxin = TRUE)
-
-	experience_per_unit = 2
 
 	value = 8
 
@@ -706,7 +675,9 @@
 			if(!R.lethal)
 				continue
 			container.remove_reagent(reagent_id,.*2)
-			L.tox_regen_buffer += 3*.
+		if(L.health)
+			L.health.adjust_tox_loss(.*-1)
+			L.queue_health_update = TRUE
 
 	return .
 
@@ -723,8 +694,9 @@
 			if(!R.lethal)
 				continue
 			container.remove_reagent(reagent_id,.*2)
-			L.tox_regen_buffer += 2*.
-
+			if(L.health)
+				L.health.adjust_tox_loss(.*-1)
+				L.queue_health_update = TRUE
 
 	return .
 
@@ -736,8 +708,6 @@
 	alpha = 225
 	flavor = "not brains"
 	value = 15
-
-	experience_per_unit = 3
 
 /reagent/medicine/zombie_antidote/on_metabolize_blood(var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1)
 	. = ..()

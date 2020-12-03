@@ -24,9 +24,9 @@
 
 	size = SIZE_2
 
-	value = 200
 
-	speed_bonus = -0.1
+
+	value = 200
 
 /obj/item/clothing/feet/shoes/magboot/left
 	name = "left magboot"

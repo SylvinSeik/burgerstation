@@ -4,12 +4,7 @@
 	verbs += /mob/abstract/observer/verb/load_most_recent_character
 	verbs += /mob/abstract/observer/verb/become_antagonist
 	verbs += /mob/abstract/observer/verb/observe
-
-	if(client)
-		client.verbs += /client/verb/jump_to_player
-		client.verbs += /client/verb/jump_to_area
-		client.verbs += /client/verb/adjust_nightvision
-
+	//verbs += /mob/abstract/observer/verb/adjust_darkvision //I unironically cannot get this working.
 	return ..()
 
 /mob/abstract/observer/verb/observe()

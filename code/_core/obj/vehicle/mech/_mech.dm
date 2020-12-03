@@ -23,10 +23,9 @@
 	. = ..()
 
 	if(.)
-		var/turf/T = get_turf(src)
-		play('sound/effects/footsteps/mechmove.ogg',)
+		play('sound/effects/footsteps/mechmove.ogg',get_turf(src))
 		if(length(passengers) && passengers[1])
-			create_alert(VIEW_RANGE,T,passengers[1],ALERT_LEVEL_NOISE)
+			create_alert(VIEW_RANGE,src,passengers[1],ALERT_LEVEL_NOISE)
 
 	return .
 

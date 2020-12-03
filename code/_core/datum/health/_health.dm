@@ -76,18 +76,33 @@
 /health/proc/get_overall_health(var/includes_fatigue = FALSE)
 	return health_max - get_total_loss(includes_fatigue)
 
+//Setting
+/health/proc/set_brute_loss(var/value)
+	damage[BRUTE] = value
+	return value
+
+/health/proc/set_burn_loss(var/value)
+	damage[BURN] = value
+	return value
+
+/health/proc/set_tox_loss(var/value)
+	damage[TOX] = value
+	return value
+
+/health/proc/set_oxy_loss(var/value)
+	damage[OXY] = value
+	return value
+
+/health/proc/set_fatigue_loss(var/value)
+	damage[FATIGUE] = value
+	return value
+
 /health/proc/restore()
 	damage = list(BRUTE = 0, BURN = 0, TOX = 0, OXY = 0, FATIGUE = 0)
 	update_health(update_hud = TRUE)
 	return TRUE
 
-/health/proc/adjust_loss_smart(var/brute,var/burn,var/tox,var/oxy,var/update=TRUE,var/organic=TRUE,var/robotic=TRUE)
-
-	if(src.organic && !organic)
-		return 0
-
-	if(!src.organic && !robotic)
-		return 0
+/health/proc/adjust_loss_smart(var/brute,var/burn,var/tox,var/oxy,var/update=TRUE)
 
 	var/total_loss = 0
 
@@ -119,6 +134,31 @@
 		update_health()
 
 	return total_loss
+
+//Adding/Subtracting
+/health/proc/adjust_brute_loss(var/value)
+	value -= (value > 0 ? resistance[BRUTE] : 0)
+	value -= min(0,damage[BRUTE] + value)
+	damage[BRUTE] += value
+	return value
+
+/health/proc/adjust_burn_loss(var/value)
+	value -= (value > 0 ? resistance[BURN] : 0)
+	value -= min(0,damage[BURN] + value)
+	damage[BURN] += value
+	return value
+
+/health/proc/adjust_tox_loss(var/value)
+	value -= (value > 0 ? resistance[TOX] : 0)
+	value -= min(0,damage[TOX] + value)
+	damage[TOX] += value
+	return value
+
+/health/proc/adjust_oxy_loss(var/value)
+	value -= (value > 0 ? resistance[OXY] : 0)
+	value -= min(0,damage[OXY] + value)
+	damage[OXY] += value
+	return value
 
 /health/proc/adjust_fatigue_loss(var/value)
 	value -= (value > 0 ? resistance[FATIGUE] : 0)
@@ -163,6 +203,21 @@
 /health/proc/update_health(var/atom/attacker,var/damage_dealt=0,var/update_hud=TRUE,var/check_death=TRUE) //Update the health values.
 	health_current = get_overall_health()
 	return TRUE
+
+/health/proc/adjust_loss(var/type=BRUTE,var/amount)
+	if(!amount)
+		return FALSE
+	switch(type)
+		if(BRUTE)
+			return adjust_brute_loss(amount)
+		if(BURN)
+			return adjust_burn_loss(amount)
+		if(TOX)
+			return adjust_tox_loss(amount)
+		if(OXY)
+			return adjust_oxy_loss(amount)
+		if(FATIGUE)
+			return adjust_fatigue_loss(amount)
 
 /health/proc/get_defense(var/atom/attacker,var/atom/hit_object)
 	return armor_base.Copy()

@@ -1,5 +1,7 @@
 #define ROUND_END_DIRECTORY "sound/round_end/"
 
+var/global/list/active_sounds = list()
+
 SUBSYSTEM_DEF(sound)
 	name = "Sound Subsystem"
 	tick_rate = DECISECONDS_TO_TICKS(1)
@@ -11,16 +13,6 @@ SUBSYSTEM_DEF(sound)
 
 	var/list/round_end_sounds = list()
 
-	var/list/active_sounds = list()
-
-/subsystem/sound/unclog(var/mob/caller)
-	for(var/k in src.active_sounds)
-		var/sound/S = k
-		qdel(S)
-		active_sounds -= k
-	broadcast_to_clients(span("danger","Removed all active sounds."))
-	return ..()
-
 /subsystem/sound/Initialize()
 	var/found_files = flist(ROUND_END_DIRECTORY)
 	for(var/k in found_files)
@@ -28,33 +20,26 @@ SUBSYSTEM_DEF(sound)
 	log_subsystem(name,"Found [length(round_end_sounds)] round end sounds.")
 	return TRUE
 
-/subsystem/sound/proc/process_sound(var/sound/S)
-	if(active_sounds[S] == -1)
-		return FALSE
-	active_sounds[S] -= 1
-	if(active_sounds[S] > 0)
-		return FALSE
-	S.status = SOUND_MUTE | SOUND_UPDATE
-	for(var/k in all_clients)
-		var/client/C = k
-		C.receive_sound(S)
-	active_sounds -= S
-	qdel(S)
-	return TRUE
-
 /subsystem/sound/on_life()
 	for(var/F in active_sounds)
 		CHECK_TICK(tick_usage_max,FPS_SERVER)
 		var/sound/S = F
-		if(!process_sound(S))
-			log_error("Warning! Could not properly process an active sound!")
-			qdel(S)
-			active_sounds -= F
+		if(active_sounds[S] == -1)
+			continue
+		active_sounds[S] -= 1
+		if(active_sounds[S] > 0)
+			continue
+		S.status = SOUND_MUTE | SOUND_UPDATE
+		for(var/k in all_clients)
+			var/client/C = k
+			C.receive_sound(S)
+		active_sounds -= S
+		qdel(S)
 
 	return TRUE
 
 /proc/stop_sound(var/sound_path,var/list/mob/hearers)
-	for(var/F in SSsound.active_sounds)
+	for(var/F in active_sounds)
 		CHECK_TICK(SSsound.tick_usage_max,FPS_SERVER)
 		var/sound/S = F
 		if(S.file != sound_path)
@@ -194,7 +179,7 @@ play('sound, atom) to play to all turfs in range of that atom(add args range_min
 play('sound',list_of_hearers, turf or vector) to play to that list of hearers at that location
 */
 
-/proc/play(var/sound_path = null, var/location_or_list = null, var/sound_source = null, var/range_min=1, var/range_max = SOUND_RANGE, var/volume=50, var/sound_setting = SOUND_SETTING_FX, var/pitch=1, var/loop=0, var/duration=0, var/pan=0, var/channel=SOUND_CHANNEL_FX, var/priority=0, var/echo = 0, var/invisibility_check = 0)
+/proc/play(var/sound_path = null, var/location_or_list = null, var/sound_source = null, var/range_min=1, var/range_max = SOUND_RANGE, var/volume=50, var/sound_setting = SOUND_SETTING_FX, var/pitch=1, var/loop=0, var/duration=0, var/pan=0, var/channel=SOUND_CHANNEL_FX, var/priority=0, var/echo = 0, var/invisibility_check = 0, var/alert=0, var/atom/alert_source = null)
 
 	if(!SSsound)
 		log_error("Tried playing a sound without the sound subsystem active!")
@@ -265,9 +250,9 @@ play('sound',list_of_hearers, turf or vector) to play to that list of hearers at
 		SSsound.channel_hack = 100
 
 	if(duration > 0)
-		SSsound.active_sounds[created_sound] = duration
+		active_sounds[created_sound] = duration
 	else if(loop)
-		SSsound.active_sounds[created_sound] = -1
+		active_sounds[created_sound] = -1
 
 	for(var/k in hearers)
 		var/mob/M = k

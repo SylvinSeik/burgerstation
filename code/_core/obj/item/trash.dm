@@ -22,3 +22,5 @@
 
 /obj/item/trash/syndicate
 	icon_state = "syndicate"
+
+

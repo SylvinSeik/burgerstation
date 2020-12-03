@@ -16,8 +16,6 @@
 
 #define LASER "laser"
 #define ARCANE "magic"
-#define MAGIC "magic" //TODO: REPLACE
-
 #define HEAT "heat"
 #define COLD "cold"
 #define BOMB "bomb"

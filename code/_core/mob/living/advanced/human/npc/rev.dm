@@ -31,7 +31,7 @@
 
 	. = ..()
 
-	var/species/S = SPECIES(species)
+	var/species/S = all_species[species]
 
 	sex = pick(MALE,FEMALE)
 	gender = sex

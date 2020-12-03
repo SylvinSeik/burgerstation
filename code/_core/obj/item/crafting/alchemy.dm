@@ -60,10 +60,10 @@
 
 		for(var/k in reagents_list)
 			var/v = reagents_list[k]
-			C.reagents.add_reagent(k,v,TNULL,FALSE,caller = caller)
+			C.reagents.add_reagent(k,v,TNULL,FALSE)
 
 		if(I.reagents)
-			I.reagents.transfer_reagents_to(C.reagents,I.reagents.volume_current,FALSE, caller = caller)
+			I.reagents.transfer_reagents_to(C.reagents,I.reagents.volume_current,FALSE)
 
 		success = TRUE
 		if(should_delete || !is_beaker(I))
@@ -81,7 +81,7 @@
 		if(R.processed_reagent)
 			var/temperature = C.reagents.average_temperature
 			C.reagents.remove_reagent(reagent_type,reagent_amount,FALSE)
-			C.reagents.add_reagent(R.processed_reagent,reagent_amount,temperature,FALSE,FALSE,caller = caller)
+			C.reagents.add_reagent(R.processed_reagent,reagent_amount,temperature,FALSE,FALSE)
 
 	C.reagents.update_container()
 

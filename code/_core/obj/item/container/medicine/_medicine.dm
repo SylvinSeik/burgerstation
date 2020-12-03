@@ -62,11 +62,17 @@
 
 	. = 0
 
-	var/brute_to_heal = (-heal_brute*heal_multiplier) + (-heal_brute_percent*A.health.get_brute_loss()*heal_multiplier)
-	var/burn_to_heal = (-heal_burn*heal_multiplier) + (-heal_burn_percent*A.health.get_burn_loss()*heal_multiplier)
+	if(heal_brute)
+		. += A.health.adjust_brute_loss(-heal_brute*heal_multiplier)
 
-	if(brute_to_heal || burn_to_heal)
-		A.health.adjust_loss_smart(brute = brute_to_heal, burn = burn_to_heal)
+	if(heal_brute_percent)
+		. += A.health.adjust_brute_loss(-heal_brute_percent*A.health.get_brute_loss()*heal_multiplier)
+
+	if(heal_burn)
+		. += A.health.adjust_burn_loss(-heal_burn*heal_multiplier)
+
+	if(heal_burn_percent)
+		. += A.health.adjust_burn_loss(-heal_burn_percent*A.health.get_burn_loss()*heal_multiplier)
 
 	if(.)
 		if(is_organ(A) && is_living(A.loc))
@@ -77,12 +83,14 @@
 				var/mob/living/advanced/player/P = caller
 				if(L.loyalty_tag == P.loyalty_tag) //Prevents an exploit.
 					var/experience_gain = -.
-					P.add_skill_xp(SKILL_MEDICINE,CEILING(experience_gain,1))
+					if(P == A.loc)
+						experience_gain *= 0.15
+					P.add_skill_xp(SKILL_MEDICINE,experience_gain)
 		else
 			A.health.update_health()
 
 	var/reagent_transfer = CEILING((1/item_count_max)*reagents.volume_current, 1)
-	reagents.transfer_reagents_to(A.reagents,reagent_transfer, caller = caller)
+	reagents.transfer_reagents_to(A.reagents,reagent_transfer)
 	reagents.volume_max = item_count_current*10
 
 	if(caller == A.loc)
@@ -107,14 +115,6 @@
 		caller.to_chat("You can't treat this!")
 		return FALSE
 
-	if(robotic)
-		if(target.health.organic)
-			caller.to_chat("This can only treat robotic limbs!")
-			return FALSE
-	else
-		if(!target.health.organic)
-			caller.to_chat("This can only treat organic limbs!")
-			return FALSE
 	return TRUE
 
 

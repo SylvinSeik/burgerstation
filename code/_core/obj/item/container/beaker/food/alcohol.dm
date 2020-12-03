@@ -76,12 +76,7 @@
 /obj/item/container/beaker/alcohol/coffee_liqueur
 	name = "Robusto Coffee Liqueur"
 	icon_state = "coffee_liqueur"
-	initial_reagent = null
-
-/obj/item/container/beaker/alcohol/coffee_liqueur/Generate()
-	reagents.add_reagent(/reagent/nutrition/ethanol/coffee_liqueur,reagents.volume_max*0.5)
-	reagents.add_reagent(/reagent/nutrition/energy/coffee,reagents.volume_max*0.5)
-	return ..()
+	initial_reagent = /reagent/nutrition/ethanol/coffee_liqueur
 
 /obj/item/container/beaker/alcohol/tequila
 	name = "Spaceworm Tequila"

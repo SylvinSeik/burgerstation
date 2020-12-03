@@ -100,6 +100,3 @@
 	value = 1.8
 
 	inaccuracy_modifer = 1.3
-
-
-

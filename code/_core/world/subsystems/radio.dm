@@ -1,3 +1,5 @@
+var/global/list/all_unprocessed_radio_data = list()
+
 SUBSYSTEM_DEF(radio)
 	name = "Radio Subsystem"
 	desc = "Controls radios."
@@ -9,17 +11,16 @@ SUBSYSTEM_DEF(radio)
 
 /subsystem/radio/on_life()
 
-	var/list/queued_telecomms = list()
+	for(var/k in all_radios)
+		var/obj/item/device/radio/R = k
+		if(!R.receiving)
+			continue
+		for(var/data_key in all_unprocessed_radio_data)
+			CHECK_TICK(tick_usage_max,FPS_SERVER*10)
+			var/data_value = all_unprocessed_radio_data[data_key]
+			R.receive_data(data_value)
 
-	for(var/area_id in all_telecomms)
-		var/list/area_list = all_telecomms[area_id]
-		for(var/k in area_list)
-			var/obj/structure/interactive/telecomms/TC = k
-			queued_telecomms |= TC
-
-	for(var/k in queued_telecomms)
-		var/obj/structure/interactive/telecomms/TC = k
-		TC.process_all_data()
+	all_unprocessed_radio_data.Cut()
 
 	return TRUE
 

@@ -50,8 +50,6 @@
 	var/light_sprite_range = 0
 	var/light_sprite_alpha = 0
 
-	var/listener = FALSE //Setting this to true doesn't make it listen after it's been initialized.
-
 /atom/proc/set_light_sprite(var/desired_range,var/desired_alpha)
 
 	var/update_overlays = FALSE
@@ -87,6 +85,16 @@
 		return TRUE
 	return FALSE
 
+/atom/proc/add_overlay(var/datum/desired_overlay)
+
+	if(length(overlays) >= 100)
+		CRASH_SAFE("Warning: [get_debug_name()] exceeds 100 overlays![is_datum(desired_overlay) ? " Overlay name: [desired_overlay.get_debug_name()]." : ""]")
+		return FALSE
+
+	overlays += desired_overlay
+
+	return TRUE
+
 /atom/proc/should_smooth_with(var/turf/T)
 	return FALSE
 
@@ -96,8 +104,6 @@
 
 /atom/Destroy()
 
-	stop_thinking(src)
-
 	set_light(FALSE)
 
 	QDEL_CUT(underlays)
@@ -106,6 +112,8 @@
 	QDEL_NULL(reagents)
 	QDEL_NULL(health)
 
+	stop_thinking(src)
+
 	for(var/k in contents)
 		var/atom/movable/A = k
 		qdel(A)
@@ -113,10 +121,6 @@
 	appearance = null
 	invisibility = 101
 	mouse_opacity = 0
-	icon = null
-	icon_state = null
-
-	all_listeners -= src
 
 	return ..()
 
@@ -142,9 +146,6 @@
 
 	if(reagents)
 		reagents = new reagents(src)
-
-	if(listener)
-		all_listeners |= src
 
 	return ..()
 
@@ -270,7 +271,4 @@
 	return TRUE
 
 /atom/Crossed(atom/movable/O) //Override default
-	return TRUE
-
-/atom/proc/on_listen(var/atom/speaker,var/datum/source,var/text,var/language_text,var/talk_type,var/frequency,var/language=LANGUAGE_BASIC,var/talk_range=TALK_RANGE)
 	return TRUE

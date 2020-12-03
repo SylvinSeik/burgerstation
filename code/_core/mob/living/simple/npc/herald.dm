@@ -1,6 +1,6 @@
 /mob/living/simple/npc/herald
 	name = "herald of Sleeping Carp"
-	boss_icon_state = "herald"
+	id = "herald"
 	icon = 'icons/mob/living/simple/lavaland/herald.dmi'
 	icon_state = "living"
 	damage_type = /damagetype/cqc/sleeping_carp/gnashing_teeth
@@ -8,7 +8,7 @@
 	ai = /ai/boss/herald/
 	value = 3000
 
-	health_base = 1000
+	health_base = 2000
 
 	move_delay = 1
 
@@ -21,7 +21,7 @@
 
 	armor_base = list(
 		BLADE = 25,
-		BLUNT = 25,
+		BLUNT = 75,
 		PIERCE = 75,
 		LASER = 75,
 		ARCANE = 50,
@@ -80,7 +80,7 @@
 
 /mob/living/simple/npc/herald/post_death()
 	. = ..()
-	CREATE(/obj/structure/interactive/crate/necro/herald,get_turf(src))
+	CREATE(/obj/structure/interactive/crate/necro,get_turf(src))
 	animate(src, pixel_z = 64, time = 30)
 	icon_state = "dead"
 	update_sprite()

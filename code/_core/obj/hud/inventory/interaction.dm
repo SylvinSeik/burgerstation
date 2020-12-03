@@ -27,6 +27,11 @@
 			L.to_chat(span("warning","You're dead!"))
 			return FALSE
 
+		if(caller.attack_flags & ATTACK_HOLD)
+			L.dash(object,0x0,2)
+			return TRUE
+
+
 	var/atom/defer_self = src.defer_click_on_object(location,control,params) //We could be holding an object.
 	var/atom/defer_object = object.defer_click_on_object(location,control,params) //The object we're clicking on could be something else.
 
@@ -69,7 +74,7 @@
 			var/highest = max(abs(vel_x),abs(vel_y))
 
 			if(!highest)
-				I.drop_item(get_turf(caller)) //Drop if we can't throw.
+				I.drop_item(get_turf(caller))
 				return TRUE
 
 			vel_x *= 1/highest
@@ -78,7 +83,7 @@
 			vel_x *= BULLET_SPEED_LARGE_PROJECTILE
 			vel_y *= BULLET_SPEED_LARGE_PROJECTILE
 
-			I.drop_item(get_turf(caller),silent=TRUE)
+			I.drop_item(get_turf(caller))
 			I.throw_self(caller,get_turf(object),text2num(params[PARAM_ICON_X]),text2num(params[PARAM_ICON_Y]),vel_x,vel_y,steps_allowed = VIEW_RANGE,lifetime = 30,desired_iff = L.iff_tag)
 		return TRUE
 
@@ -92,7 +97,7 @@
 		var/turf/desired_turf = object ? get_turf(object) : null
 		if(desired_turf && istype(object,/obj/structure/smooth/table) && get_dist(caller_turf,desired_turf) <= 1)
 			return drop_item_from_inventory(desired_turf,text2num(params[PARAM_ICON_X])-16,text2num(params[PARAM_ICON_Y])-16)
-		return drop_item_from_inventory(get_turf(src))
+		return drop_item_from_inventory()
 
 	if(grabbed_object && grabbed_object == object)
 		return release_object(caller)
@@ -112,6 +117,7 @@
 
 	if(params && (caller.attack_flags & ATTACK_SELF || defer_self == defer_object) && defer_self.click_self(caller)) //Click on ourself if we're told to click on ourself.
 		return TRUE
+
 
 	if(get_dist(defer_self,defer_object) <= 1)
 		if(is_item(defer_object)) //We're clicking on another item.
@@ -201,7 +207,6 @@
 
 	update_sprite()
 	item_to_wield.update_sprite()
-
 	return TRUE
 
 
@@ -237,7 +242,7 @@
 
 	var/atom/defer_object = object.defer_click_on_object(location,control,params)
 
-	if(is_item(defer_object) && get_dist(caller,object) <= 1 && get_dist(caller,src) <= 1) //Put the item in the inventory slot.
+	if(is_item(defer_object) && get_dist(caller,object) <= 1) //Put the itme in the inventory slot.
 		var/obj/item/object_as_item = defer_object
 		if(src.add_object(object_as_item))
 			return TRUE
@@ -247,7 +252,8 @@
 /obj/hud/inventory/get_object_to_damage_with(var/atom/attacker,var/atom/victim,params,var/accurate=FALSE,var/find_closet=FALSE)
 	return src.loc
 
-obj/hud/inventory/proc/drop_item_from_inventory(var/turf/new_location,var/pixel_x_offset = 0,var/pixel_y_offset = 0,var/silent=FALSE)
+obj/hud/inventory/proc/drop_item_from_inventory(var/turf/new_location,var/pixel_x_offset = 0,var/pixel_y_offset = 0)
+
 	if(!length(src.held_objects))
 		return FALSE
 

@@ -30,9 +30,11 @@
 		/obj/item/weapon/ranged/bullet/magazine/rifle/marksman,
 		/obj/item/magazine/rifle_308,
 		/obj/item/magazine/rifle_308/ap,
-		/obj/item/weapon/ranged/bullet/magazine/shotgun/bulldog,
+		/obj/item/weapon/ranged/bullet/magazine/shotgun/bull,
 		/obj/item/magazine/shotgun_auto/buckshot,
 		/obj/item/magazine/shotgun_auto/slug,
+		/obj/item/magazine/shotgun_auto/fire,
+		/obj/item/magazine/shotgun_auto/flechette,
 		/obj/item/weapon/ranged/bullet/magazine/rifle/heavy_sniper,
 		/obj/item/magazine/sniper_50,
 		/obj/item/magazine/sniper_50/ap,
@@ -53,9 +55,7 @@
 		/obj/item/storage/kit/burn/filled,
 		/obj/item/storage/kit/toxin/filled,
 		/obj/item/container/blood_pack/full/reptile,
-		/obj/item/container/blood_pack/full/o_negative,
-		/obj/item/container/beaker/vial/zombie_antidote,
-		/obj/item/container/medicine/nanopaste
+		/obj/item/container/blood_pack/full/o_negative
 	)
 	markup = 0.75
 
@@ -100,8 +100,7 @@
 		/obj/item/supply_crate/syndicate,
 		/obj/item/weapon/melee/toolbox/syndicate,
 		/obj/item/weapon/ranged/reagent_sprayer/spray_bottle/lube,
-		/obj/item/pinpointer/crew/syndicate,
-		/obj/item/weapon/melee/torch/flashlight/maglight
+		/obj/item/pinpointer/crew/syndicate
 	)
 	markup = 0.75
 
@@ -122,7 +121,6 @@
 		/obj/item/supply_crate/russian,
 		/obj/item/weapon/melee/toolbox/syndicate,
 		/obj/item/weapon/ranged/reagent_sprayer/spray_bottle/lube,
-		/obj/item/weapon/melee/torch/flashlight/maglight
 	)
 
 
@@ -155,10 +153,6 @@
 		/obj/item/weapon/ranged/bullet/pump/shotgun/ks23,
 		/obj/item/storage/ammo/buckshot_23,
 		/obj/item/storage/ammo/slug_23,
-
-		/obj/item/weapon/ranged/bullet/magazine/shotgun/saiga_23,
-		/obj/item/magazine/saiga_23/buckshot,
-		/obj/item/magazine/saiga_23/slug,
 
 		/obj/item/weapon/melee/sword/allium,
 		/obj/item/weapon/melee/shield

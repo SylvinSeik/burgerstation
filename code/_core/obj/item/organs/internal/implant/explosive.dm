@@ -10,8 +10,10 @@
 	if(T.z < Z_LEVEL_MISSION && is_advanced(loc))
 		var/mob/living/advanced/A = loc
 		if(!A.dead)
-			A.health.adjust_loss_smart(brute=100,burn=100)
+			for(var/i=1,i<=10,i++)
+				A.health.adjust_brute_loss(100)
+				A.health.adjust_burn_loss(100)
 			explode(T,7,A,src)
-			A.smite()
+			A.queue_health_update = TRUE
 
 	return .

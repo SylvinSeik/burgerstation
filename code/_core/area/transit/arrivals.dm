@@ -15,7 +15,7 @@
 
 /area/transit/arrivals_shuttle_01/station
 	name = "arrivals shuttle - station"
-	area_identifier = "Burgerstation"
+	area_identifier = "Station"
 
 
 
@@ -36,4 +36,4 @@
 
 /area/transit/arrivals_shuttle_02/station
 	name = "arrivals shuttle - station"
-	area_identifier = "Burgerstation"
+	area_identifier = "Station"

@@ -15,6 +15,6 @@
 
 	if(istype(O,/obj/structure/interactive/ore_box))
 		var/obj/structure/interactive/ore_box/OB = O
-		src.drop_item(OB)
+		src.force_move(OB)
 
 	return ..()

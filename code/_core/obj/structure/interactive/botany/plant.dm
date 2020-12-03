@@ -21,7 +21,7 @@
 	icon_state = "wheat"
 
 	potency = 10
-	yield = 4
+	yield = 1
 	growth_speed = 6
 	growth_min = 0
 
@@ -96,7 +96,6 @@
 	growth_speed = 4
 	growth_min = 75
 
-	delete_after_harvest = FALSE
 
 /obj/structure/interactive/plant/cabbage
 	plant_type = /plant_type/cabbage

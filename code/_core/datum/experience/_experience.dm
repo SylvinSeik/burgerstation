@@ -23,9 +23,6 @@
 
 	var/mob/living/owner
 
-/experience/get_examine_list(var/mob/examiner)
-	return list(div("examine_title","[name]"),div("examine_description","[desc]"),div("examine_description","[desc]"),div("examine_description_long",src.desc_extended))
-
 /experience/Destroy()
 	owner = null
 	return ..()

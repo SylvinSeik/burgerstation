@@ -21,15 +21,8 @@
 	var/light_sprite //The light sprite of the object, if any.
 
 	var/flags_placement = FLAGS_PLACEMENT_NONE
-	var/list/structure_blacklist = list() //Things that can't be constructed on the same turf that's occupying this.
 
 	interaction_flags = FLAG_INTERACTION_LIVING | FLAG_INTERACTION_NO_HORIZONTAL
-
-/obj/structure/on_crush()
-	. = ..()
-	loc.visible_message(span("warning","\The [src.name] is crushed under \the [src.loc.name]!"))
-	qdel(src)
-	return .
 
 /obj/structure/should_smooth_with(var/turf/T)
 
@@ -90,7 +83,7 @@
 /obj/structure/Cross(atom/movable/O)
 
 	if(O.collision_flags & src.collision_flags)
-		var/direction = O.move_dir
+		var/direction = get_dir(O,src)
 		if(turn(direction,180) & collision_dir)
 			return FALSE
 		if(is_structure(O)) //Prevents infinite loops.
@@ -100,10 +93,10 @@
 
 	return TRUE
 
-/obj/structure/Uncross(var/atom/movable/O)
+/obj/structure/Uncross(var/atom/movable/O,var/atom/NewLoc,var/atom/OldLoc)
 
 	if(O.collision_flags & src.collision_flags)
-		var/direction = O.move_dir
+		var/direction = get_dir(OldLoc,NewLoc)
 		if(collision_dir == (NORTH | SOUTH | EAST | WEST))
 			return TRUE //Prevents people from getting stuck in walls.
 		if(direction & collision_dir)

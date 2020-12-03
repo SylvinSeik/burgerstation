@@ -22,9 +22,7 @@ var/global/list/obj/item/device/radio/all_radios = list()
 
 	var/radio_sound = 'sound/items/radio.ogg'
 
-	var/broadcasting_range = 5
-
-	listener = TRUE
+	var/broadcasting_range = VIEW_RANGE
 
 	value = 20
 
@@ -113,13 +111,66 @@ list(
 			loc.trigger(caller,src,signal_freq,signal_code)
 			return TRUE
 
-/obj/item/device/radio/on_listen(var/atom/speaker,var/datum/source,var/text,var/language_text,var/talk_type,var/frequency, var/language = LANGUAGE_BASIC,var/talk_range=TALK_RANGE)
-	if(talk_type == TEXT_RADIO) //Don't listen to other radio signals.
+
+/obj/item/device/radio/proc/send_data(var/list/data = list())
+
+	if(!length(data))
 		return FALSE
-	if(!broadcasting && !(frequency > 0)) //Dumb logic here, but it catches null as well as null (greater,less,equal) 0 is always 0.
+
+	if(!data["frequency"])
+		data["frequency"] = frequency
+
+	var/speaker_ref = is_atom(data["speaker"]) ? "/ref[data["speaker"]]" : null
+
+	if(speaker_ref && all_unprocessed_radio_data[speaker_ref])
 		return FALSE
-	use_radio(speaker,source,text,language_text,TEXT_RADIO,src.frequency,language,talk_range)
-	return ..()
+
+	var/area/A = get_area(src)
+	if(A.flags_comms & FLAG_COMM_DISABLED)
+		return FALSE
+
+	/*
+	if(TRUE || A.flags_comms & FLAG_COMM_SCRAMBLED)
+		data["message"] = scramble(data["message"])
+		data["message_language"] = scramble(data["message_language"])
+	*/
+
+	all_unprocessed_radio_data[speaker_ref] = data
+
+	play(radio_sound,src)
+
+	return TRUE
+
+/obj/item/device/radio/proc/receive_data(var/list/data = list())
+
+	if(!length(data))
+		return FALSE
+
+	if(data["frequency"] != frequency && !(data["frequency"] in listening_frequencies))
+		return FALSE
+
+	var/area/A = get_area(src)
+	if(!A)
+		log_error("WARNING: [get_debug_name()] wasn't in a valid area!")
+		return FALSE
+
+	if(A.flags_comms & FLAG_COMM_DISABLED)
+		return FALSE
+
+	/*
+	if(A.flags_comms & FLAG_COMM_SCRAMBLED)
+		data["message"] = scramble(data["message"])
+		data["message_language"] = scramble(data["message_language"])
+	*/
+
+	var/turf/T = get_turf(src)
+	for(var/mob/M in range(broadcasting_range,T))
+		CHECK_TICK(75,FPS_SERVER)
+		if(!M.client)
+			continue
+		M.to_chat_language(data["message"],CHAT_TYPE_RADIO,data["language"],data["message_language"])
+
+	return TRUE
 
 
 /obj/item/device/radio/nanotrasen
@@ -129,13 +180,3 @@ list(
 	frequency_max = RADIO_FREQ_SHIP + 2
 
 	value = 15
-
-/obj/item/device/radio/syndicate
-	name = "\improper NanoTrasen Radio"
-
-	frequency_min = RADIO_FREQ_SYNDICATE
-	frequency_max = RADIO_FREQ_COMMON
-
-	frequency = RADIO_FREQ_SYNDICATE
-
-	value = 100

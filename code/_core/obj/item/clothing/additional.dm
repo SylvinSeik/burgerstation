@@ -28,6 +28,6 @@
 
 	for(var/k in additional_clothing_stored)
 		var/obj/item/C = k
-		C.drop_item(src,silent=TRUE)
+		C.drop_item(src)
 
 	return TRUE

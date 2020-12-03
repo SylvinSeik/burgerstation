@@ -1,6 +1,6 @@
 /health/mob/living/advanced/zombie/
 	var/extra_max_health = 0
-	has_bloodoxygen = FALSE
+	has_bloodloss = FALSE
 
 /health/mob/living/advanced/zombie/update_health_stats()
 	. = ..()

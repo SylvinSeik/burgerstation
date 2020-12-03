@@ -83,11 +83,11 @@
 
 	if(is_advanced(caller))
 		var/mob/living/advanced/A = caller
-		if(lowertext(A.real_name) != lowertext(owner_name))
+		if(A.real_name != owner_name)
 			caller.to_chat(span("notice","The [src.name] refuses to lock!"))
 			return FALSE
 	else
-		if(lowertext(caller.name) != lowertext(owner_name))
+		if(caller.name != owner_name)
 			caller.to_chat(span("notice","The [src.name] refuses to lock!"))
 			return FALSE
 

@@ -35,7 +35,7 @@
 
 	for(var/k in linked_walls)
 		var/obj/structure/interactive/blob/B = k
-		B.health.adjust_loss_smart(brute=max(0,B.health.health_current - 10))
+		B.health.adjust_brute_loss(max(0,B.health.health_current - 10))
 		B.health.update_health()
 		B.color = null
 
@@ -55,7 +55,7 @@
 				if(!T)
 					continue
 				var/obj/structure/interactive/blob/B2 = locate() in T.contents
-				if(!B2 && !is_wall(T) && !istype(T,/turf/simulated/hazard/))
+				if(!B2 && !is_wall(T))
 					. += T
 
 	for(var/d in DIRECTIONS_CARDINAL)
@@ -63,7 +63,7 @@
 		if(!T)
 			continue
 		var/obj/structure/interactive/blob/B = locate() in T.contents
-		if(!B && !is_wall(T) && !istype(T,/turf/simulated/hazard/))
+		if(!B && !is_wall(T))
 			. += T
 
 	return .

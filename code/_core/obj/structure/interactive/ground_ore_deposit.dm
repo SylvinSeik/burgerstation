@@ -46,9 +46,9 @@
 	FINALIZE(O)
 	var/obj/structure/interactive/ore_box/OB = locate() in range(1,src)
 	if(OB)
-		O.drop_item(OB)
+		O.force_move(OB)
 	else
-		O.drop_item(get_step(src,pick(DIRECTIONS_ALL)))
+		O.force_move(get_step(src,pick(DIRECTIONS_ALL)))
 	if(ore_score <= 0)
 		qdel(src)
 	update_sprite()

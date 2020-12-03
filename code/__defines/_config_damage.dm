@@ -58,33 +58,33 @@
 
 
 //Melee Balance
-#define DAMAGE_DAGGER 15
+#define DAMAGE_DAGGER 20
 #define SPEED_DAGGER 8
-#define AP_DAGGER 0
+#define AP_DAGGER 40
 
-#define DAMAGE_SWORD 30
+#define DAMAGE_SWORD 40
 #define SPEED_SWORD 10
-#define AP_SWORD 20
+#define AP_SWORD 50
 
-#define DAMAGE_AXE 45
+#define DAMAGE_AXE 60
 #define SPEED_AXE 12
-#define AP_AXE 40
+#define AP_AXE 60
 
-#define DAMAGE_CLUB 60
+#define DAMAGE_CLUB 80
 #define SPEED_CLUB 14
-#define AP_CLUB 60
+#define AP_CLUB 70
 
-#define DAMAGE_GREATSWORD 75
+#define DAMAGE_GREATSWORD 100
 #define SPEED_GREATSWORD 16
 #define AP_GREATSWORD 80
 
-#define DAMAGE_GREATAXE 90
+#define DAMAGE_GREATAXE 120
 #define SPEED_GREATAXE 18
-#define AP_GREATAXE 100
+#define AP_GREATAXE 90
 
-#define DAMAGE_GREATCLUB 105
+#define DAMAGE_GREATCLUB 140
 #define SPEED_GREATCLUB 20
-#define AP_GREATCLUB 120
+#define AP_GREATCLUB 100
 
 
 //Slowdown values are automaticlly calculated. Thank god.
@@ -93,10 +93,3 @@
 #define ARMOR_MEDIUM 200
 #define ARMOR_HEAVY 300
 #define ARMOR_VERY_HEAVY 500
-
-
-
-#define SOUL_SIZE_COMMON 1000
-#define SOUL_SIZE_UNCOMMON 2500
-#define SOUL_SIZE_RARE 5000
-#define SOUL_SIZE_MYSTIC 10000

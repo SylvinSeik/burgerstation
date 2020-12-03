@@ -27,12 +27,10 @@
 
 	health_base = 25
 
-	damage_coefficient = 0.5
+	health_coefficient = 0.5
 
 	has_pain = TRUE
 
-/obj/item/organ/foot/proc/get_footsteps(var/list/original_footsteps,var/enter=TRUE)
-	return original_footsteps
 
 /obj/item/organ/foot/on_pain()
 
@@ -40,20 +38,18 @@
 
 	if(is_advanced(loc))
 		var/mob/living/advanced/A = loc
-		if(!A.horizontal && A.add_status_effect(STAGGER,5,5))
+		if(A.add_status_effect(STAGGER,5,5))
 			A.to_chat(span("danger","Your [src.name] recoils in pain, throwing you off balance!"))
 			return TRUE
 
 	return .
 
 /obj/item/organ/foot/get_footsteps(var/list/original_footsteps,var/enter=TRUE)
-
 	for(var/k in src.inventories)
 		var/obj/hud/inventory/H = k
-		var/obj/item/clothing/I = H.get_top_worn_object()
-		if(istype(I))
+		var/obj/item/I = H.get_top_worn_object()
+		if(I)
 			return I.get_footsteps(original_footsteps,enter)
-
 	return original_footsteps
 
 /obj/item/organ/foot/left
@@ -175,6 +171,8 @@
 
 	defense_rating = CYBORG_ARMOR
 	health = /health/obj/item/organ/synthetic
+
+
 
 /obj/item/organ/foot/cyborg/left
 	name = "left cyborg foot"

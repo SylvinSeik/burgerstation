@@ -1,7 +1,7 @@
 /obj/item/clothing/head/hat/cult
 	name = "cult hood"
 	desc = "MARANAX INFIRMAX"
-	desc_extended = "A sinister hood."
+	desc_extended = "A sinister hood that for some reason doesn't work as an actual toggle-able hood."
 	icon = 'icons/obj/item/clothing/hats/cult.dmi'
 	rarity = RARITY_UNCOMMON
 
@@ -23,6 +23,9 @@
 
 	size = SIZE_2
 
+
+	value = 120
+
 /obj/item/clothing/head/hat/cult/old
 
 	name = "ancient cult hood"
@@ -42,3 +45,6 @@
 	)
 
 	size = SIZE_2
+
+
+	value = 200

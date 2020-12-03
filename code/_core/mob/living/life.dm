@@ -21,7 +21,7 @@
 
 	src.to_chat(span("danger","<h1>You died!</h1>"),CHAT_TYPE_COMBAT)
 	src.to_chat(span("danger","Your death is not the end. Someone may come along and revive you, or you can be cloned again by ghosting and loading your current character."))
-	src.to_chat(span("danger","Be warned, if you choose to be cloned or you cannot be revived, you will lose all your items until they are retrieved again!."))
+	src.to_chat(span("danger","Be warned, if you choose to be cloned or you cannot be revived, you will lose all your items until they are retrieved!."))
 
 	dead = TRUE
 	time_of_death = world.time
@@ -33,9 +33,7 @@
 	if(ai)
 		ai.on_death()
 
-	var/turf/T = get_turf(src)
-
-	create_alert(VIEW_RANGE*0.5,T, alert_level = ALERT_LEVEL_CAUTION, visual = TRUE)
+	create_alert(VIEW_RANGE*0.5, get_turf(src), alert_level = ALERT_LEVEL_CAUTION, visual = TRUE)
 
 	movement_flags = 0x0
 	attack_flags = 0x0
@@ -61,6 +59,7 @@
 	DG.update_owner(src)
 
 	if(client)
+		var/turf/T = get_turf(src)
 		notify_ghosts("[src.name] has died!",T)
 
 	if(master)
@@ -107,14 +106,9 @@
 	undelete(src)
 	return TRUE
 
-/mob/living/proc/rejuvenate()
-	if(health) health.adjust_loss_smart(-health.get_brute_loss(),-health.get_burn_loss(),-health.get_tox_loss(),-health.get_oxy_loss())
-	blood_volume = blood_volume_max
-	if(reagents) reagents.remove_all_reagents()
-	return TRUE
-
 /mob/living/proc/resurrect()
-	rejuvenate()
+	if(health)
+		health.adjust_loss_smart(-health.get_brute_loss(),-health.get_burn_loss(),-health.get_tox_loss(),-health.get_oxy_loss())
 	revive()
 	return TRUE
 
@@ -215,10 +209,7 @@
 /mob/living/proc/handle_hunger()
 
 	var/thirst_mod = health && (health.stamina_current <= health.stamina_max*0.5) ? 2 : 1
-	var/quality_mod = 1 + clamp(1 - get_nutrition_quality_mod(),0,1)*5
-
-	add_nutrition(-(LIFE_TICK_SLOW/10)*0.10*quality_mod)
-	add_nutrition_fast(-(LIFE_TICK_SLOW/10)*0.20*quality_mod)
+	add_nutrition(-(LIFE_TICK_SLOW/10)*0.10)
 	add_hydration(-(LIFE_TICK_SLOW/10)*0.05*thirst_mod)
 
 	if(client)
@@ -251,13 +242,13 @@ mob/living/proc/on_life_slow()
 		return FALSE
 
 	if(blood_volume < blood_volume_max)
-		var/blood_volume_to_add = -(add_hydration(-0.05) + add_nutrition(-0.3))*0.5
+		var/blood_volume_to_add = -(add_hydration(-0.025) + add_nutrition(-0.1))
 		blood_volume = clamp(blood_volume + blood_volume_to_add,0,blood_volume_max)
 		queue_health_update = TRUE
 	else if(blood_volume > blood_volume_max)
 		blood_volume--
-		if(health && blood_volume >= blood_volume_max*1.05)
-			health.adjust_loss_smart(tox=0.5,robotic=FALSE)
+		if(blood_volume >= blood_volume_max*1.05)
+			if(health) health.adjust_loss_smart(tox=1)
 
 	handle_regen()
 
@@ -299,7 +290,7 @@ mob/living/proc/on_life_slow()
 			if(last_intoxication_message != 4)
 				to_chat(span("danger","You feel gjkpeagheutyhaophghe."))
 				last_intoxication_message = 4
-			health.adjust_loss_smart(tox=0.25*(LIFE_TICK_SLOW/10),robotic = FALSE)
+			health.adjust_tox_loss(0.25*(LIFE_TICK_SLOW/10))
 			queue_health_update = TRUE
 
 	if(intoxication >= 600 && prob(intoxication/100))
@@ -348,7 +339,7 @@ mob/living/proc/on_life_slow()
 		var/brute_to_regen = clamp(brute_regen_buffer,HEALTH_REGEN_BUFFER_MIN,HEALTH_REGEN_BUFFER_MAX)
 		var/burn_to_regen = clamp(burn_regen_buffer,HEALTH_REGEN_BUFFER_MIN,HEALTH_REGEN_BUFFER_MAX)
 		var/tox_to_regen = clamp(tox_regen_buffer,HEALTH_REGEN_BUFFER_MIN,HEALTH_REGEN_BUFFER_MAX)
-		health.adjust_loss_smart(brute = -brute_to_regen, burn = -burn_to_regen, tox=-tox_to_regen, robotic=FALSE)
+		health.adjust_loss_smart(brute = -brute_to_regen, burn = -burn_to_regen, tox=-tox_to_regen)
 		brute_regen_buffer -= brute_to_regen
 		burn_regen_buffer -= burn_to_regen
 		tox_regen_buffer -= tox_to_regen
@@ -401,6 +392,7 @@ mob/living/proc/on_life_slow()
 		if(health_adjust)
 			brute_regen_buffer += brute_to_adjust
 			burn_regen_buffer += burn_to_adjust
+			add_nutrition(-health_adjust*0.2)
 			if(health_adjust > 0 && player_controlled)
 				add_attribute_xp(ATTRIBUTE_FORTITUDE,health_adjust*10)
 
@@ -408,6 +400,8 @@ mob/living/proc/on_life_slow()
 		stamina_adjust += min(max(0,health.get_stamina_loss() - stamina_regen_buffer),health.stamina_regeneration*delay_mod*nutrition_hydration_mod*0.1)
 		if(stamina_adjust)
 			stamina_regen_buffer += stamina_adjust
+			add_nutrition(-stamina_adjust*0.05)
+			add_hydration(-stamina_adjust*0.1)
 			if(stamina_adjust > 0 && player_controlled)
 				add_attribute_xp(ATTRIBUTE_RESILIENCE,stamina_adjust*10)
 

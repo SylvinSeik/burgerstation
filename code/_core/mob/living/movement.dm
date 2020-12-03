@@ -1,4 +1,4 @@
-/mob/living/proc/handle_footsteps(var/turf/T,var/list/footsteps_to_use,var/enter=TRUE)
+/mob/living/handle_footsteps(var/turf/T,var/list/footsteps_to_use,var/enter=TRUE)
 
 	if(!T)
 		return FALSE
@@ -22,27 +22,24 @@
 		if(!k)
 			continue
 		var/footstep/F = SSfootstep.all_footsteps[k]
+		/*
+		if(F.has_footprints)
+			var/type_to_use = enter ? /obj/effect/footprint/emboss/ : /obj/effect/footprint/emboss/exit
+			var/obj/effect/footprint/emboss/P = new type_to_use(T,src.dir,TRUE,TRUE)
+			P.color = F.footprint_color
+			P.alpha = F.footprint_alpha
+			INITIALIZE(P)
+		*/
 		if(!footstep_counter)
 			var/footstep_volume = 50 * (move_mod-0.5)
 			if(is_sneaking)
 				footstep_volume *= 0.5
-
-			var/footstep_sound
-			if(horizontal)
-				if(length(F.drag_sounds))
-					footstep_sound = pick(F.drag_sounds)
-			else
-				if(length(F.footstep_sounds))
-					footstep_sound = pick(F.footstep_sounds)
-
-			if(footstep_sound)
+			if(length(F.footstep_sounds))
+				var/footstep_sound = pick(F.footstep_sounds)
 				play(footstep_sound,all_mobs_with_clients - src, T, volume = footstep_volume, sound_setting = SOUND_SETTING_FOOTSTEPS, pitch = 1 + RAND_PRECISE(-F.variation_pitch,F.variation_pitch))
 				if(src.client) play(footstep_sound,src,volume = footstep_volume, sound_setting = SOUND_SETTING_FOOTSTEPS, pitch= 1 + RAND_PRECISE(-F.variation_pitch,F.variation_pitch))
 
-	return TRUE
-
-
-/mob/living/proc/get_footsteps(var/list/original_footsteps,var/enter=TRUE)
+/mob/living/get_footsteps(var/list/original_footsteps,var/enter=TRUE)
 	return original_footsteps
 
 /mob/living/Move(NewLoc,Dir=0,step_x=0,step_y=0)
@@ -80,16 +77,7 @@
 	if(is_sneaking)
 		on_sneak()
 
-	if(isturf(old_loc))
-		var/turf/T = old_loc
-		if(T.old_living)
-			T.old_living -= src
-
-	if(isturf(loc))
-		var/turf/T = loc
-		if(!T.old_living)
-			T.old_living = list()
-		T.old_living |= src
+	climb_counter = 0
 
 	handle_tabled()
 
@@ -114,14 +102,6 @@
 
 	return TRUE
 
-/mob/living/on_sprint()
-	add_hydration(-0.4)
-	return ..()
-
-/mob/living/on_jog()
-	add_hydration(-0.1)
-	return ..()
-
 /mob/living/handle_movement(var/adjust_delay = 1)
 
 
@@ -144,7 +124,8 @@
 	. = ..()
 
 	if(.)
-
+		add_nutrition(-0.01)
+		add_hydration(-0.01)
 		if(has_status_effect(CONFUSED))
 			move_dir = turn(move_dir,180)
 
@@ -153,8 +134,8 @@
 /mob/living/get_stance_movement_mul()
 
 	if(horizontal)
-		move_mod = 1
-		return 6
+		move_mod = initial(move_mod)
+		return 3
 
 	return ..()
 
@@ -165,7 +146,7 @@
 	if(is_sneaking)
 		. *= (2 - stealth_mod*0.5)
 
-	. *= 2 - min(1.5,get_nutrition_mod() * get_hydration_mod() * (0.5 + get_nutrition_quality_mod()*0.5))
+	. *= (2 - (get_nutrition_mod() * get_hydration_mod()))
 
 	if(has_status_effect(ADRENALINE))
 		. *= 0.9
@@ -186,7 +167,7 @@
 			S.sneaking = on
 			S.update_sprite()
 
-	if(on && !dead)
+	if(on)
 		stealth_mod = get_skill_power(SKILL_SURVIVAL)
 		is_sneaking = TRUE
 		return TRUE
@@ -210,7 +191,7 @@
 		var/mob/living/L = O
 		if(L.loyalty_tag == src.loyalty_tag)
 			return TRUE
-		if(L.horizontal || src.horizontal)
+		if(L.dead || src.dead)
 			return TRUE
 		if(L.mob_size >= mob_size)
 			return FALSE
@@ -227,12 +208,9 @@
 		add_status_effect(STUN,5,5,source = owner)
 	else
 		add_status_effect(STAGGER,2,2,source = owner)
-
 	return ..()
 
 /mob/living/proc/handle_tabled()
-
-	climb_counter = 0
 
 	if(tabled != currently_tabled)
 		currently_tabled = tabled

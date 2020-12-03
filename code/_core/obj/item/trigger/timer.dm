@@ -32,9 +32,8 @@
 	last_caller = caller
 	start_thinking(src)
 	active = TRUE
-	var/turf/T = get_turf(src)
-	play('sound/weapons/timer/arm.ogg',T)
-	create_alert(VIEW_RANGE,T,src,ALERT_LEVEL_NOISE)
+	play('sound/weapons/timer/arm.ogg',src)
+	create_alert(VIEW_RANGE,src,src,ALERT_LEVEL_NOISE)
 	return ..()
 
 /obj/item/device/timer/think()
@@ -45,8 +44,8 @@
 		if( (time_set % clamp( FLOOR(1 + (time_set/10),1) ,1,30)) == 0)
 			var/turf/T = get_turf(src)
 			if(T)
-				play('sound/weapons/timer/beep.ogg',T)
-				create_alert(VIEW_RANGE,T,src,ALERT_LEVEL_NOISE)
+				play('sound/weapons/timer/beep.ogg',src)
+				create_alert(VIEW_RANGE,src,src,ALERT_LEVEL_NOISE)
 
 		if(time_set <= 0)
 			if(loc)

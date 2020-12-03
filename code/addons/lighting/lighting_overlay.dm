@@ -8,7 +8,7 @@
 	layer         = LAYER_LIGHTING
 	plane         = PLANE_LIGHTING
 	invisibility  = INVISIBILITY_LIGHTING
-	//blend_mode    = BLEND_MULTIPLY
+	blend_mode    = BLEND_MULTIPLY
 
 	var/needs_update = FALSE
 
@@ -29,11 +29,7 @@
 
 	color = LIGHTING_BASE_MATRIX
 
-	. = ..()
-
-	verbs.Cut()
-
-	return .
+	return ..()
 
 /atom/movable/lighting_overlay/Destroy()
 
@@ -72,7 +68,7 @@
 		cb = corners[4] || dummy_lighting_corner
 		ca = corners[1] || dummy_lighting_corner
 
-	//var/max = max(cr.cache_mx, cg.cache_mx, cb.cache_mx, ca.cache_mx)
+	var/max = max(cr.cache_mx, cg.cache_mx, cb.cache_mx, ca.cache_mx)
 	luminosity = 1
 
 	var/rr = cr.cache_r
@@ -94,11 +90,9 @@
 	if ((rr & gr & br & ar) && (rg + gg + bg + ag + rb + gb + bb + ab == 8))
 		icon_state = LIGHTING_TRANSPARENT_ICON_STATE
 		color = null
-	/*
 	else if (max < LIGHTING_SOFT_THRESHOLD)
 		icon_state = LIGHTING_DARKNESS_ICON_STATE
 		color = null
-	*/
 	else
 		icon_state = LIGHTING_BASE_ICON_STATE
 		if (islist(color))
@@ -125,13 +119,11 @@
 				0, 0, 0, 1
 			)
 
-	/*
-	//if(max > LIGHTING_SOFT_THRESHOLD)
+	if(max > LIGHTING_SOFT_THRESHOLD)
 		luminosity = 1
-		T.darkness = 0 //set the turf's darkness when calculated
+		T.darkness = max //set the turf's darkness when calculated
 	else
-		luminosity = 1
+		luminosity = 0
 		T.darkness = 0
-	*/
 
 #undef ALL_EQUAL

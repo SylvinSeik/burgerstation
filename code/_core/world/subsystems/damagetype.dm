@@ -18,7 +18,7 @@ SUBSYSTEM_DEF(damagetype)
 			var/damagetype/DT = damage_list["damage_type"]
 			DT.process_damage(damage_list["attacker"],damage_list["victim"],damage_list["weapon"],damage_list["hit_object"],damage_list["blamed"],damage_list["damage_multiplier"])
 		catch(var/exception/e)
-			log_error("Damage Subsystem Error: [e] on [e.file]:[e.line]!<br>[e.desc]")
+			log_error("Damage Subsystem Error: [e] on [e.file]:[e.line]!")
 		damage_to_process -= d_id
 
 	return ..()
@@ -32,8 +32,6 @@ SUBSYSTEM_DEF(damagetype)
 		all_damage_types[D.type] = D
 
 	log_subsystem(name,"Initialized [length(all_damage_types)] damage types.")
-
-	CREATE(/mob/abstract/melee_checker,locate(1,1,1))
 
 	return ..()
 

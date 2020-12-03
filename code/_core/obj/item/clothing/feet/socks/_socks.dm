@@ -25,8 +25,6 @@
 
 	size = SIZE_0
 
-	speed_bonus = 0.05
-
 
 
 /obj/item/clothing/feet/socks/ankle

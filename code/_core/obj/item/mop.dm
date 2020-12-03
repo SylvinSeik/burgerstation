@@ -18,7 +18,7 @@
 /obj/item/mop/click_on_object(var/mob/caller as mob,var/atom/object,location,control,params)
 
 	if(isobj(object) && object.reagents)
-		SPAM_CHECK(10)
+		SPAM_CHECK
 		INTERACT_CHECK
 		INTERACT_CHECK_OTHER(object)
 		if(!object.reagents)
@@ -29,8 +29,8 @@
 		var/overflow = src.reagents.volume_current - space_left
 		if(overflow > 0)
 			object.reagents.splash(caller,T,overflow,1)
-		src.reagents.transfer_reagents_to(object.reagents,min(space_left,src.reagents.volume_current),should_update = FALSE, caller = caller)
-		object.reagents.transfer_reagents_to(src.reagents,src.reagents.volume_max, caller = caller)
+		src.reagents.transfer_reagents_to(object.reagents,min(space_left,src.reagents.volume_current),should_update = FALSE)
+		object.reagents.transfer_reagents_to(src.reagents,src.reagents.volume_max)
 		play('sound/effects/watersplash.ogg',T)
 		return TRUE
 

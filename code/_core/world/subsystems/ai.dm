@@ -9,20 +9,9 @@ SUBSYSTEM_DEF(ai)
 	var/list/active_ai = list()
 	var/list/inactive_ai = list()
 
+	var/turf/list/stuck_turfs = list() //List of turfs that the AI keeps getting stuck on.
+
 	use_time_dialation = FALSE
-
-/subsystem/ai/unclog(var/mob/caller)
-
-	for(var/k in active_ai)
-		var/ai/AI = k
-		if(AI.owner)
-			qdel(AI.owner)
-		else
-			qdel(AI)
-	broadcast_to_clients(span("danger","Deleted all non-boss mobs and AIs."))
-
-	return ..()
-
 
 /subsystem/ai/on_life()
 
@@ -33,9 +22,7 @@ SUBSYSTEM_DEF(ai)
 			log_error("WARING! AI of type [AI.type] didn't have an owner!")
 			qdel(AI)
 			continue
-		var/should_life = AI.should_life()
-		if(should_life == null || (should_life && AI.on_life(tick_rate) == null))
-			log_error("WARING! AI of type [AI.type] in [AI.owner.get_debug_name()] likely hit a runtime and was deleted, along with its owner.")
-			qdel(AI.owner)
+		if(AI.should_life())
+			AI.on_life(tick_rate)
 
 	return TRUE

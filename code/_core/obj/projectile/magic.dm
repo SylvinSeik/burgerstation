@@ -13,37 +13,13 @@
 
 	collision_bullet_flags = FLAG_COLLISION_BULLET_SOLID
 
-
-/obj/projectile/magic/fireball/explosive
-	hit_target_turf = TRUE
-
-/obj/projectile/magic/fireball/explosive/post_on_hit(var/atom/hit_atom)
-
+/obj/projectile/magic/fireball/post_on_hit(var/atom/hit_atom)
 	. = ..()
 
 	if(.)
 		explode(get_turf(hit_atom),1,owner,src,loyalty_tag)
 
 	return .
-
-
-/obj/projectile/magic/fireball/lava
-	hit_target_turf = TRUE
-
-/obj/projectile/magic/fireball/lava/post_on_hit(var/atom/hit_atom)
-
-	. = ..()
-
-	var/turf/T = get_turf(hit_atom)
-	if(T)
-		var/obj/effect/temp/hazard/lava/L = new(T,SECONDS_TO_DECISECONDS(30),owner)
-		INITIALIZE(L)
-		GENERATE(L)
-		FINALIZE(L)
-
-	return .
-
-
 
 
 /obj/projectile/magic/chaos
@@ -53,12 +29,6 @@
 /obj/projectile/magic/magic_missile
 	name = "magic missile"
 	icon_state = "missile"
-
-	collision_bullet_flags = FLAG_COLLISION_BULLET_SOLID
-
-/obj/projectile/magic/blade
-	name = "magic blade"
-	icon_state = "blade"
 
 	collision_bullet_flags = FLAG_COLLISION_BULLET_SOLID
 
@@ -146,22 +116,3 @@
 	icon_state = "blackflame"
 
 	collision_bullet_flags = FLAG_COLLISION_BULLET_SOLID
-
-
-/obj/projectile/magic/cultist
-	name = "cultist hand"
-	icon_state = "cultist"
-
-	collision_bullet_flags = FLAG_COLLISION_BULLET_SOLID
-
-
-/obj/projectile/magic/cultist/on_enter_tile(var/turf/old_loc,var/turf/new_loc)
-
-	. = ..()
-
-	var/obj/effect/temp/hazard/curse/found_curse = locate() in new_loc
-
-	if(!found_curse)
-		new /obj/effect/temp/hazard/curse(new_loc,SECONDS_TO_DECISECONDS(10),owner)
-
-	return .

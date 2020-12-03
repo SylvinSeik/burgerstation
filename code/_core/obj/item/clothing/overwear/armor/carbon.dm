@@ -1,6 +1,6 @@
 
 /obj/item/clothing/overwear/armor/carbon
-	name = "carbon armor"
+	name = "space military armor"
 	desc = "Military. In space!"
 	desc_extended = "Armor made from hardened carbon fibres."
 	icon = 'icons/obj/item/clothing/suit/carbon.dmi'

@@ -1,12 +1,3 @@
-/mob/living/advanced/dash(var/atom/dash_target,var/dash_direction=0x0,var/instances_left = 0)//Can either input dash target or dash direction.
-
-	if(driving)
-		return FALSE
-
-	return ..()
-
-
-
 /mob/living/advanced/on_sprint()
 
 	if(health && health.adjust_stamina(-SPRINT_STAMINA_LOSS))
@@ -30,17 +21,8 @@ mob/living/advanced/get_movement_delay()
 
 	. = ..()
 
-	var/health_mul = 1
-	var/stamina_mul = 1
-
-	if(health && !has_status_effect(ADRENALINE))
-		health_mul = clamp(0.5 + (health.health_current/health.health_max),0.5,1)
-		stamina_mul = clamp(0.75 + (health.stamina_current/health.stamina_max),0.75,1)
-
-	//https://www.desmos.com/calculator/9oyrocojgp
-	var/cucumber = weight/(weight_max*health_mul*stamina_mul*health_mul)
-	cucumber = clamp(cucumber,0,1)
-	. *= 2 - ((1-cucumber)**0.42)
+	if(health && health.health_current <= 0 && !has_status_effect(ADRENALINE))
+		. *= 2
 
 	. *= slowdown_mul
 

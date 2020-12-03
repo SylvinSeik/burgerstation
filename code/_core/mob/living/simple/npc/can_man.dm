@@ -1,6 +1,6 @@
 /mob/living/simple/npc/can_man
 	name = "Can Man"
-	boss_icon_state = "can_man"
+	id = "can_man"
 	icon = 'icons/mob/living/simple/canman.dmi'
 	icon_state = "living"
 	damage_type = /damagetype/unarmed/claw/
@@ -76,7 +76,6 @@
 
 /mob/living/simple/npc/can_man/post_death()
 	. = ..()
-	CREATE(/obj/structure/interactive/crate/necro/can_man,get_turf(src))
 	charge_steps = 0
 	charge_dir = 0
 	icon_state = "dead"
@@ -123,6 +122,7 @@
 	charge_steps = 0
 	CALLBACK_REMOVE("stop_charge_\ref[src]")
 	return TRUE
+
 
 
 

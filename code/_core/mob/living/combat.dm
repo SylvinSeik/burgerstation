@@ -1,8 +1,5 @@
 /mob/living/can_be_attacked(var/atom/attacker,var/atom/weapon,var/params,var/damagetype/damage_type)
 
-	if(!isturf(src.loc))
-		return FALSE
-
 	if(attacker && is_living(attacker) && src.loyalty_tag)
 		var/mob/living/L = attacker
 		if(L.loyalty_tag == src.loyalty_tag)
@@ -19,7 +16,7 @@
 
 /mob/living/proc/send_pain(var/pain_strength=50)
 	if(pain_strength < 75)
-		do_emote("pain")
+		emote("pain")
 	else
-		do_emote("scream")
+		emote("scream")
 	return TRUE

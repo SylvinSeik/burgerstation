@@ -39,8 +39,7 @@
 
 	mob = M
 	eye = M
-	all_mobs_with_clients |= M
-	all_listeners |= M
+	all_mobs_with_clients += M
 	view = M.view
 
 	update_zoom(2)
@@ -74,8 +73,6 @@
 		M.parallax.Cut()
 
 	all_mobs_with_clients -= M
-	if(!M.listener)
-		all_listeners -= M
 	M.client = null
 	if(hard)
 		M.ckey_last = null

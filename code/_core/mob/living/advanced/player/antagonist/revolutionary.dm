@@ -21,8 +21,3 @@
 	. = ..()
 	name = "Comrade [real_name]"
 	return TRUE
-
-/mob/living/advanced/player/antagonist/revolutionary/add_species_languages()
-	. = ..()
-	known_languages[LANGUAGE_RUSSIAN] = TRUE
-	return .

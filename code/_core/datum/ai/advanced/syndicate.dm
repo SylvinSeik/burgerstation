@@ -1,6 +1,7 @@
 /ai/advanced/syndicate
 	enemy_tags = list("NanoTrasen")
 	should_find_weapon = TRUE
+	debug = TRUE
 	aggression = 1
 	retaliate = TRUE
 

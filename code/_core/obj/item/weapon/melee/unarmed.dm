@@ -1,1 +1,0 @@
-obj/item/weapon/melee/unarmed

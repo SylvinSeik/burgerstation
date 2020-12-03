@@ -47,8 +47,6 @@
 
 	has_footsteps = FALSE
 
-	stun_angle = 180
-
 /mob/living/simple/npc/spacecarp/post_death()
 	..()
 	icon_state = "[initial(icon_state)]_dead"

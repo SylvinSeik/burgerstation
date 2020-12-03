@@ -8,5 +8,3 @@
 	sunlight_color = "#724C2B"
 
 	cheese_type = /reagent/nutrition/cheese/kadchgall
-
-	sound_environment = ENVIRONMENT_PLAIN

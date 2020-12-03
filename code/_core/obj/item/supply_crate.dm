@@ -14,8 +14,6 @@
 
 	var/loot
 
-	var/has_gibs = TRUE
-
 	value = 500
 
 	weight = 10
@@ -37,9 +35,8 @@
 
 /obj/item/supply_crate/on_destruction(var/mob/caller,var/damage = FALSE)
 
-	var/turf/T = get_turf(src)
-	play('sound/effects/crate_break.ogg',T)
-	create_alert(VIEW_RANGE,T,caller,ALERT_LEVEL_NOISE)
+	play('sound/effects/crate_break.ogg',get_turf(src))
+	create_alert(VIEW_RANGE,src,caller,ALERT_LEVEL_NOISE)
 
 	if(loot)
 		var/list/spawned_loot = CREATE_LOOT(loot,src.loc)
@@ -47,9 +44,8 @@
 			var/obj/item/I = k
 			animate(I,pixel_x = rand(-8,8),pixel_y = rand(-8,8),time=5)
 
-	if(has_gibs)
-		for(var/i=1,i<=5,i++)
-			new /obj/effect/temp/crate_gib/(src.loc,600)
+	for(var/i=1,i<=5,i++)
+		new /obj/effect/temp/crate_gib/(src.loc,600)
 
 	. = ..()
 
@@ -72,8 +68,3 @@
 /obj/item/supply_crate/nanotrasen
 	loot = /loot/supply_crate/nanotrasen
 	icon_state = "supply_nanotrasen"
-
-/obj/item/supply_crate/magic
-	loot = /loot/supply_crate/magic
-	icon_state = "supply_magic"
-	value = 1000

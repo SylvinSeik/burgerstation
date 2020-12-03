@@ -1,6 +1,6 @@
 /mob/living/simple/npc/goliath/broodmother
 	name = "goliath broodmother"
-	boss_icon_state = "broodmother"
+	id = "broodmother"
 	icon = 'icons/mob/living/simple/lavaland/goliath_broodmother.dmi'
 	icon_state = "broodmother"
 	damage_type = /damagetype/unarmed/claw/
@@ -56,7 +56,7 @@
 
 /mob/living/simple/npc/goliath/broodmother/post_death()
 	. = ..()
-	CREATE(/obj/structure/interactive/crate/necro/broodmother,get_turf(src))
+	CREATE(/obj/structure/interactive/crate/necro,get_turf(src))
 	return .
 
 /mob/living/simple/npc/goliath/broodmother/on_life()

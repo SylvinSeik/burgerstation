@@ -94,7 +94,7 @@ var/global/list/equipped_antags = list()
 
 	for(var/obj/item/I in T.contents)
 		stored_objects += I
-		I.drop_item(src)
+		I.force_move(src)
 		I.plane = PLANE_HUD_OBJ
 		I.pixel_y = 4
 

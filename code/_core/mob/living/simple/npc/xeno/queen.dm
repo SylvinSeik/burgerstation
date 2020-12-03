@@ -2,7 +2,7 @@ var/mob/living/simple/npc/xeno/queen/tracked_xeno_queen
 
 /mob/living/simple/npc/xeno/queen
 	name = "xeno queen"
-	boss_icon_state = "xeno_queen"
+	id = "xeno_queen"
 	icon = 'icons/mob/living/simple/alien_queen.dmi'
 	icon_state = "living"
 	pixel_x = -16
@@ -41,7 +41,7 @@ var/mob/living/simple/npc/xeno/queen/tracked_xeno_queen
 		FIRE = FALSE
 	)
 
-	ai = /ai/boss/xeno_queen
+	ai = /ai/xeno
 	damage_type = /damagetype/npc/xeno/queen
 	class = /class/xeno
 

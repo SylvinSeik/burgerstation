@@ -16,7 +16,7 @@
 
 	return ..()
 
-/obj/item/proc/quick_equip(var/mob/living/advanced/caller,var/ignore_hands = FALSE,var/ignore_worn=FALSE,var/ignore_held=FALSE,var/ignore_dynamic=FALSE,var/debug=FALSE,var/silent=FALSE)
+/obj/item/proc/quick_equip(var/mob/living/advanced/caller,var/ignore_hands = FALSE,var/ignore_worn=FALSE,var/ignore_held=FALSE,var/ignore_dynamic=FALSE,var/debug=FALSE)
 
 	var/obj/hud/inventory/best_inventory_wear
 	var/obj/hud/inventory/best_inventory_equip
@@ -42,11 +42,11 @@
 
 	if(best_inventory_wear)
 		if(debug) log_debug("(WEAR) Best inventory found for [caller.get_debug_name()]: [best_inventory_wear.get_debug_name()].")
-		return best_inventory_wear.add_object(src,silent=silent)
+		return best_inventory_wear.add_object(src)
 
 	if(best_inventory_equip)
 		if(debug) log_debug("(EQUIP) Best inventory found for [caller.get_debug_name()]: [best_inventory_equip.get_debug_name()].")
-		return best_inventory_equip.add_object(src,silent=silent)
+		return best_inventory_equip.add_object(src)
 
 	return FALSE
 
@@ -58,12 +58,6 @@
 
 	. = ..()
 
-	if(speed_bonus != 0)
-		if(speed_bonus > 0)
-			. += div("notice","<b>Speed Bonus:</b> [speed_bonus*100]%.")
-		else
-			. += div("notice","<b>Speed Penalty:</b> [speed_bonus*100]%.")
-
 	var/list/defense_rating_to_print = get_defense_rating()
 
 	if(defense_rating_to_print && length(defense_rating_to_print) && protected_limbs && length(protected_limbs))
@@ -72,6 +66,7 @@
 			var/damage_rating = defense_rating_to_print[damagetype]
 			if(damage_rating)
 				armor_list += "[capitalize(damagetype)]: [damage_rating]"
+
 		. += div("notice","<b>Armor:</b> [capitalize(english_list(armor_list))].")
 		. += div("notice","<b>Protected Zones:</b> [capitalize(english_list(protected_limbs))].")
 

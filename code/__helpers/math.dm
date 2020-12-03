@@ -11,13 +11,10 @@
 
 	var/absolute = abs(input)
 
-	if(absolute >= 1000000000)
-		return "[FLOOR(input/1000000000,0.1)]m"
-
-	else if(absolute >= 1000000)
+	if(absolute >= 1000000)
 		return "[FLOOR(input/1000000,0.1)]m"
 
-	else if(absolute >= 100000)
+	else if(absolute >= 10000)
 		return "[FLOOR(input/1000,0.1)]k"
 
 	return "[input]"

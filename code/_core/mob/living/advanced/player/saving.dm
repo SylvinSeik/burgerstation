@@ -28,20 +28,16 @@
 	gender = loaded_data["gender"]
 	currency = loaded_data["currency"]
 	species = loaded_data["species"]
-	nutrition = isnum(loaded_data["nutrition"]) ? loaded_data["nutrition"] : initial(nutrition)*0.5
-	hydration = isnum(loaded_data["hydration"]) ? loaded_data["hydration"] : initial(hydration)*0.5
-	nutrition_fast = isnum(loaded_data["nutrition_fast"]) ? loaded_data["nutrition_fast"] : 0
-	nutrition_quality = isnum(loaded_data["nutrition_quality"]) ? loaded_data["nutrition_quality"] : initial(nutrition_quality)
+	nutrition = isnum(loaded_data["nutrition"]) ? loaded_data["nutrition"] : 1000
+	hydration = isnum(loaded_data["hydration"]) ? loaded_data["hydration"] : 1000
 	save_id = loaded_data["id"]
 	insurance = isnum(loaded_data["insurance"]) ? loaded_data["insurance"] : INSURANCE_PAYOUT * 3
 	insurance_premiums = isnum(loaded_data["insurance_premiums"]) ? loaded_data["insurance_premiums"] : 0
-	blood_type = loaded_data["blood_type"] ? text2path(loaded_data["blood_type"]) : /reagent/blood //This should generate a new blood type.
+	blood_type = loaded_data["blood_type"] ? text2path(loaded_data["blood_type"]) : /reagent/blood
 
 	if(loaded_data["dead"]) //New body!
-		nutrition = initial(nutrition)*0.25
-		nutrition_fast = nutrition
-		hydration = initial(hydration)*0.5
-		nutrition_quality = initial(nutrition_quality)
+		nutrition = 600
+		hydration = 600
 		if(isnum(insurance))
 			var/insurance_to_pay = clamp(insurance,0,INSURANCE_PAYOUT)
 			insurance -= insurance_to_pay
@@ -125,8 +121,6 @@
 	.["sex"] = sex
 	.["nutrition"] = nutrition
 	.["hydration"] = hydration
-	.["nutrition_quality"] = nutrition_quality
-	.["nutrition_fast"] = nutrition_fast
 	.["known_languages"] = known_languages
 	.["id"] = save_id
 	.["dead"] = died
@@ -143,7 +137,7 @@
 		try
 			final_organ_list[id] = O.save_item_data(save_inventory)
 		catch(var/exception/e)
-			log_error("get_mob_data:() [e] on [e.file]:[e.line]\n[e.desc]!")
+			log_error("get_mob_data:() [e] on [e.file]:[e.line]!")
 
 	.["organs"] = final_organ_list
 

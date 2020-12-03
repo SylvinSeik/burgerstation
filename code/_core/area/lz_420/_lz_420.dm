@@ -1,126 +1,68 @@
 /area/lz_420
 	name = "LZ 420"
+
+	trackable = TRUE
+
 	area_identifier = "Mission"
 
-/area/lz_420/exterior/
-	name = "LZ-420 Snow Forest"
-	icon_state = "jungle"
-	weather = WEATHER_RAIN
-	ambient_temperature = T0C + 40
-
-	sunlight_freq = 8
-	sunlight_color = "#29332C"
-
-	cheese_type = /reagent/nutrition/cheese/brabander
-
-	//ambient_sound = 'sound/ambient/crickets.ogg'
-
-	random_sounds = list(
-		'sound/ambient/ambiruin_1.ogg',
-		'sound/ambient/ambiruin_2.ogg',
-		'sound/ambient/ambiruin_3.ogg',
-		'sound/ambient/ambiruin_4.ogg',
-		'sound/ambient/ambiruin_5.ogg',
-		'sound/ambient/ambiruin_6.ogg',
-		'sound/ambient/ambiruin_7.ogg',
-	)
-
-	tracks = TRACKS_JUNGLE
-
-	sound_environment = ENVIRONMENT_FOREST
-
-
-/area/lz_420/interior/
+/area/lz_420/nexus
+	name = "\improper Nexus"
 	sunlight_freq = 0
 	interior = TRUE
-
-	sound_environment = ENVIRONMENT_ROOM
-
-/area/lz_420/interior/snow_cave
-	name = "\improper Unexplored Caves"
-	icon_state = "cave"
-	tracks = TRACKS_CAVE
-	random_sounds = list(
-		'sound/ambient/cave_1.ogg',
-		'sound/ambient/cave_2.ogg',
-	)
-	cheese_type = /reagent/nutrition/cheese/gruyere
-
-	sound_environment = ENVIRONMENT_CAVE
-
-/area/lz_420/interior/nexus
-	name = "\improper Nexus"
 	icon_state = "pink"
-	sound_environment = ENVIRONMENT_ROOM
 
-/area/lz_420/interior/nexus/entrance
+/area/lz_420/nexus/entrance
 	name = "\improper Nexus East Entrance"
 	icon_state = "hanger"
 
-/area/lz_420/interior/nexus/central
+/area/lz_420/nexus/central
 	name = "\improper Central Nexus Hallway"
 	icon_state = "hall_c"
 
-	sound_environment = ENVIRONMENT_HALLWAY
-
-/area/lz_420/interior/nexus/west
+/area/lz_420/nexus/west
 	name = "\improper West Nexus Hallway"
 	icon_state = "hall_w"
 
-	sound_environment = ENVIRONMENT_HALLWAY
-
-/area/lz_420/interior/nexus/east
+/area/lz_420/nexus/east
 	name = "\improper East Nexus Hallway"
 	icon_state = "hall_e"
 
-	sound_environment = ENVIRONMENT_HALLWAY
-
-/area/lz_420/interior/nexus/south
+/area/lz_420/nexus/south
 	name = "\improper South Nexus Hallway"
 	icon_state = "hall_s"
 
-	sound_environment = ENVIRONMENT_HALLWAY
-
-/area/lz_420/interior/nexus/north
+/area/lz_420/nexus/north
 	name = "\improper North Nexus Hallway"
 	icon_state = "hall_n"
 
-	sound_environment = ENVIRONMENT_HALLWAY
-
-/area/lz_420/interior/nexus/maint
-	name = "\improper Nexus Maintenance"
-	icon_state = "maint"
-
-	sound_environment = ENVIRONMENT_ALLEY
-
-/area/lz_420/interior/nexus/chapel
+/area/lz_420/nexus/chapel
 	name = "\improper Nexus Chapel"
 	icon_state = "chapel"
 
-/area/lz_420/interior/nexus/armory
+/area/lz_420/nexus/armory
 	name = "\improper Nexus Armory"
 	icon_state = "armory"
 
-/area/lz_420/interior/nexus/cargo
+/area/lz_420/nexus/cargo
 	name = "\improper Nexus Cargo"
 	icon_state = "cargo"
 
-/area/lz_420/interior/nexus/kitchen
+/area/lz_420/nexus/kitchen
 	name = "\improper Nexus Kitchen"
 	icon_state = "kitchen"
 
-/area/lz_420/interior/nexus/garden
+/area/lz_420/nexus/garden
 	name = "\improper Nexus Garden"
 	icon_state = "grass"
 
-/area/lz_420/interior/nexus/medical
+/area/lz_420/nexus/medical
 	name = "\improper Nexus Medical"
 	icon_state = "med"
 
-/area/lz_420/interior/nexus/engineering
+/area/lz_420/nexus/engineering
 	name = "\improper Nexus Engineering"
 	icon_state = "eng"
 
-/area/lz_420/interior/nexus/wip
+/area/lz_420/nexus/wip
 	name = "\improper Nexus Abandoned Area"
 	icon_state = "wip"

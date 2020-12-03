@@ -32,7 +32,7 @@
 	worn_pixel_x = -16
 	worn_pixel_y = -8
 
-	worn_layer = LAYER_MOB_CLOTHING_ALL
+	worn_layer = LAYER_MOB_CLOTHING_NECK_OVER
 
 	value = 8000
 

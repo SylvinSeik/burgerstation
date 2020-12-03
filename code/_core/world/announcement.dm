@@ -19,11 +19,7 @@
 
 	for(var/k in valid_mobs)
 		var/mob/M = k
-		var/knows_language = length(M.known_languages) && M.known_languages[language]
-		if(knows_language)
-			M.to_chat(text_to_announce,CHAT_TYPE_SAY)
-		else
-			M.to_chat(text_to_announce_language,CHAT_TYPE_SAY)
+		M.to_chat_language(text_to_announce,CHAT_TYPE_SAY,language,text_to_announce_language)
 
 	if(sound_to_play)
 		play(sound_to_play,valid_mobs, sound_setting = SOUND_SETTING_UI)

@@ -26,7 +26,6 @@
 	enabled = !enabled
 	update_sprite()
 	update_atom_light()
-	update_held_icon()
 	return TRUE
 
 /obj/item/weapon/melee/torch/update_atom_light()
@@ -70,9 +69,7 @@
 	desired_light_power = 0.5
 	desired_light_color = "#FFD175"
 
-	value = 100
-
-	size = SIZE_2
+	value = 200
 
 
 /obj/item/weapon/melee/torch/flashlight
@@ -94,8 +91,6 @@
 
 	value = 20
 
-	size = SIZE_2
-
 /obj/item/weapon/melee/torch/flashlight/maglight
 	name = "maglight"
 	desc = "A robust flashlight."
@@ -113,5 +108,3 @@
 	desired_light_angle = LIGHT_NARROW
 
 	value = 80
-
-	size = SIZE_2

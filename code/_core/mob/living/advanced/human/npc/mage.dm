@@ -1,5 +1,5 @@
 /mob/living/advanced/npc/mage
-	name = "syndicate mage"
+	name = "sorcer"
 	desc = "A member of the Syndicate crime organization."
 	enable_AI = TRUE
 	ai = /ai/advanced/syndicate

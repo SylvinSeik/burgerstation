@@ -1,6 +1,6 @@
 /mob/living/advanced/proc/add_species_health_elements()
 
-	var/species/S = SPECIES(species)
+	var/species/S = all_species[species]
 
 	for(var/v in S.spawning_health)
 		var/obj/hud/button/B = v
@@ -9,7 +9,7 @@
 
 /mob/living/advanced/should_bleed()
 
-	var/species/S = SPECIES(species)
+	var/species/S = all_species[species]
 	if(S.flags_species_traits & TRAIT_NO_BLOOD)
 		return FALSE
 
@@ -33,7 +33,7 @@
 	. = ..()
 
 	if(!stealthy && damage_amount > 0)
-		health_regen_delay = max(health_regen_delay,300)
+		health_regen_delay = max(health_regen_delay,600)
 		if(!dead && damage_amount > 10 && prob(damage_amount*0.3))
 			src.send_pain(damage_amount)
 

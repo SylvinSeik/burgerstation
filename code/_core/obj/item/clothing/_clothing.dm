@@ -4,8 +4,6 @@
 	worn_layer = LAYER_MOB
 	var/flags_clothing = FLAG_CLOTHING_NONE
 
-	weight = 0
-
 	color = "#FFFFFF"
 
 	icon_state = "inventory"
@@ -57,8 +55,6 @@
 	can_wear = TRUE
 
 	value = -1
-
-	var/speed_bonus = 0
 
 /obj/item/clothing/proc/get_defense_rating()
 	return defense_rating.Copy()
@@ -115,10 +111,7 @@
 
 	..()
 
-/obj/item/clothing/on_drop(var/obj/hud/inventory/old_inventory,var/atom/new_loc,var/silent=FALSE)
+/obj/item/clothing/on_drop(var/obj/hud/inventory/old_inventory,var/atom/new_loc)
 	. = ..()
 	remove_additonal_clothing()
 	return .
-
-/obj/item/clothing/proc/get_footsteps(var/list/original_footsteps,var/enter=TRUE)
-	return original_footsteps

@@ -1,5 +1,3 @@
-#define SPECIES(x) SSspecies.all_species[x]
-
 #define SPECIES_NONE 0x0
 
 #define SPECIES_HUMAN 0x1

@@ -24,9 +24,7 @@
 /obj/item/chime/trigger(var/mob/caller,var/atom/source,var/signal_freq,var/signal_code)
 
 	if(sound_to_play)
-		var/turf/T = get_turf(src)
-		play(sound_to_play,T)
-		create_alert(VIEW_RANGE*0.5,T,last_interacted,ALERT_LEVEL_NOISE)
+		play(sound_to_play,get_turf(src))
 
 	return ..()
 
@@ -50,7 +48,7 @@
 		if(I.flags_tool == FLAG_TOOL_SCREWDRIVER)
 			if(stored_device)
 				caller.to_chat(span("notice","You remove \the [stored_device.name] from \the [src.name]."))
-				stored_device.drop_item(get_turf(src))
+				stored_device.force_move(get_turf(src))
 				stored_device = null
 			else
 				caller.to_chat(span("notice","There is nothing to remove from \the [src.name]!"))

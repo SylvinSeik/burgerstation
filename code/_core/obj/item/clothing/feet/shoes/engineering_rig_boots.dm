@@ -30,8 +30,6 @@
 
 	value = 300
 
-	speed_bonus = 0
-
 
 
 /obj/item/clothing/feet/shoes/engineering/left
