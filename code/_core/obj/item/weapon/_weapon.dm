@@ -14,6 +14,17 @@
 
 	quick_function_type = FLAG_QUICK_TOGGLE
 
+	var/enchantment/enchantment
+
+/obj/item/weapon/get_examine_list(var/mob/examiner)
+
+	. = ..()
+
+	if(enchantment)
+		. += div("notice","It's enchanted with [enchantment.name].")
+
+	return .
+
 /obj/item/weapon/update_icon()
 
 	var/open_text = open_icon && open ? "_open" : ""
@@ -33,6 +44,8 @@
 	if(!override_icon_state)
 		icon_state = "[initial(icon_state)][open_text]"
 
+
+
 	return ..()
 
 /obj/item/weapon/click_on_object(var/mob/caller as mob,var/atom/object,location,control,params)
@@ -48,21 +61,44 @@
 	return TRUE
 */
 
-/obj/item/weapon/on_drop(var/obj/hud/inventory/I)
+/obj/item/weapon/on_drop(var/obj/hud/inventory/old_inventory,var/atom/new_loc,var/silent=FALSE)
 	wielded = FALSE
-	if(I.child_inventory)
-		I.child_inventory.parent_inventory = null
-		I.child_inventory.update_sprite()
-		I.child_inventory = null
+	if(old_inventory.child_inventory)
+		old_inventory.child_inventory.parent_inventory = null
+		old_inventory.child_inventory.update_sprite()
+		old_inventory.child_inventory = null
 	update_sprite()
 	return ..()
 
 /obj/item/weapon/save_item_data(var/save_inventory = TRUE)
 	. = ..()
 	if(length(polymorphs)) .["polymorphs"] = polymorphs
+
+	if(enchantment)
+		.["enchantment"] = list(
+			"name" = enchantment.name,
+			"type" = enchantment.type,
+			"strength" = enchantment.strength
+		)
+
+
+
 	return .
 
 /obj/item/weapon/load_item_data_pre(var/mob/living/advanced/player/P,var/list/object_data)
 	. = ..()
 	if(object_data["polymorphs"]) polymorphs = object_data["polymorphs"]
+	return .
+
+/obj/item/weapon/load_item_data_post(var/mob/living/advanced/player/P,var/list/object_data)
+
+	. = ..()
+
+	if(length(object_data["enchantment"]))
+		var/list/enchant_data = object_data["enchantment"]
+		var/enchantment/type_to_create = text2path(enchant_data["type"])
+		enchantment = new type_to_create
+		enchantment.name = enchant_data["name"]
+		enchantment.strength = enchant_data["strength"]
+
 	return .

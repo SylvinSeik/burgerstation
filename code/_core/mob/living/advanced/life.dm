@@ -1,5 +1,5 @@
 /mob/living/advanced/death_message()
-	src.emote("deathgasp")
+	src.do_emote("deathgasp")
 	return TRUE
 
 
@@ -15,26 +15,11 @@
 	return .
 
 /mob/living/advanced/pre_death()
-	return TRUE
 
-/*
-/mob/living/advanced/do_loot_drop(var/atom/desired_loc)
+	if(driving)
+		driving.exit_vehicle(src,get_turf(driving))
 
-	if(health && desired_loc && loot_drop && is_item(desired_loc))
-		var/obj/item/I = desired_loc
-		var/loot/L = all_loot[loot_drop]
-		if(!L)
-			return FALSE
-		L.spawn_loot_container(desired_loc)
-
-		var/obj/item/currency/C = new(src.loc)
-		C.value = 1 + FLOOR(health.health_max/10, 1)
-		INITIALIZE(C)
-		I.add_to_inventory(null,C,FALSE)
-		return TRUE
-
-	return FALSE
-*/
+	return ..()
 
 mob/living/advanced/revive()
 
@@ -50,6 +35,9 @@ mob/living/advanced/revive()
 	. = ..()
 
 	drop_held_objects(src.loc)
+	for(var/obj/hud/inventory/I in inventory)
+		if(I.grabbed_object)
+			I.release_object()
 
 	for(var/k in overlays_assoc)
 		update_overlay_tracked(k, desired_plane = plane)

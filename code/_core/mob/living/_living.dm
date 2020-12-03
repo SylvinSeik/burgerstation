@@ -6,7 +6,6 @@
 
 	var/list/experience/attribute/attributes
 	var/list/experience/skill/skills
-	var/list/faction/factions
 
 	movement_delay = DECISECONDS_TO_TICKS(4)
 
@@ -16,10 +15,16 @@
 
 	var/enable_AI = FALSE
 	var/ai/ai
-	var/id //Boss ID
+	//var/id //Boss ID
+
+	var/boss_icon_state
 
 	var/iff_tag
 	var/loyalty_tag
+
+	var/list/dynamic_variable_base = list()
+	var/list/dynamic_variable_mul = list()
+	var/list/dynamic_variable_add = list()
 
 	mouse_over_pointer = MOUSE_ACTIVE_POINTER
 
@@ -30,9 +35,17 @@
 	var/charge_dodge = 500
 
 	var/nutrition = 1000
+	var/nutrition_fast = 0
 	var/hydration = 1000
+	var/nutrition_quality = 1000 //0 to 2000. 2000 means super health, 0 means absolutely fucking obese unfit and all that.
 	var/intoxication = 0
 	var/last_intoxication_message = 0
+
+	var/blood_type = /reagent/blood
+	var/blood_volume = BLOOD_LEVEL_DEFAULT
+	var/blood_volume_max = BLOOD_LEVEL_DEFAULT
+
+	var/blood_oxygen = 0 //Additional blood oxygen.
 
 	var/first_life = TRUE
 
@@ -116,10 +129,6 @@
 	var/dead = FALSE
 	var/time_of_death = -1
 
-	var/blood_type = /reagent/blood
-	var/blood_volume = BLOOD_LEVEL_DEFAULT
-	var/blood_volume_max = BLOOD_LEVEL_DEFAULT
-
 	var/obj/structure/buckled_object
 
 	reagents = /reagent_container/living
@@ -128,9 +137,7 @@
 	var/image/security_hud_image
 	var/image/medical_hud_image_advanced
 
-
-
-	has_footsteps = TRUE
+	var/has_footsteps = TRUE
 
 	var/climb_counter = 0
 
@@ -209,7 +216,8 @@
 		"yawn",
 		"cry",
 		"clap",
-		"salute"
+		"salute",
+		"spin"
 	)
 
 	var/tabled = FALSE
@@ -359,9 +367,6 @@
 
 	. = ..()
 
-	if(ai)
-		ai = new ai(src)
-
 	if(desired_client)
 		screen_blood = list()
 		screen_blood += new /obj/hud/screen_blood(src,NORTHWEST)
@@ -376,8 +381,10 @@
 
 /mob/living/Initialize()
 
+	if(ai) ai = new ai(src)
+
 	if(boss)
-		SSbosses.tracked_bosses[id] = src
+		SSbosses.tracked_bosses += src
 		SSbosses.living_bosses += src
 
 	initialize_attributes()
@@ -386,12 +393,6 @@
 	set_intent(intent,TRUE)
 
 	. = ..()
-
-	if(boss)
-		for(var/mob/living/advanced/player/P in view(src,VIEW_RANGE))
-			for(var/obj/hud/button/boss_health/B in P.buttons)
-				B.target_boss = src
-				B.update_stats()
 
 	chat_overlay = new(src.loc)
 	chat_overlay.layer = LAYER_EFFECT
@@ -429,6 +430,15 @@
 	set_loyalty_tag(loyalty_tag,TRUE)
 	set_iff_tag(iff_tag,TRUE)
 	setup_name()
+	return .
+
+/mob/living/Finalize()
+	. = ..()
+	if(boss)
+		for(var/mob/living/advanced/player/P in view(src,VIEW_RANGE))
+			for(var/obj/hud/button/boss_health/B in P.buttons)
+				B.target_bosses |= src
+				B.update_stats()
 	return .
 
 /mob/living/proc/setup_name()
@@ -508,7 +518,7 @@
 		if(messages) caller?.to_chat(span("warning","There is nothing to draw!"))
 		return FALSE
 
-	var/amount_added = needle.reagents.add_reagent(blood_type,min(amount,blood_volume))
+	var/amount_added = needle.reagents.add_reagent(blood_type,min(amount,blood_volume),caller = caller)
 	blood_volume -= amount_added
 	queue_health_update = TRUE
 

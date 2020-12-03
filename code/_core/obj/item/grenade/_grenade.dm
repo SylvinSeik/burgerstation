@@ -166,7 +166,6 @@
 		if(!stored_trigger)
 			var/obj/item/device/T = object
 			T.drop_item(src)
-			T.force_move(src)
 			stored_trigger = T
 			caller.to_chat(span("notice","You fit \the [object.name] inside \the [src.name]."))
 			update_sprite()
@@ -193,7 +192,7 @@
 
 	for(var/k in stored_containers)
 		var/obj/item/container/beaker/B = k
-		B.reagents.transfer_reagents_to(src.reagents,B.reagents.volume_current,FALSE,FALSE)
+		B.reagents.transfer_reagents_to(src.reagents,B.reagents.volume_current,FALSE,FALSE, caller = caller)
 		B.reagents.update_container()
 
 	src.reagents.update_container()

@@ -1,35 +1,3 @@
-/obj/structure/interactive/vending/ammo
-	name = "ammo vendor"
-	icon_state = "liberationstation"
-
-/obj/structure/interactive/vending/ammo/pistol
-	name = "pistol ammo vendor"
-	stored_types = list(
-		/obj/item/magazine/gyrojet,
-		/obj/item/magazine/smp_9mm,
-		/obj/item/magazine/pistol_12mm/nt,
-		/obj/item/magazine/pistol_10mm,
-		/obj/item/magazine/pistol_9mm,
-	)
-
-/obj/structure/interactive/vending/ammo/auto
-	name = "smg, rifle ammo vendor"
-	stored_types = list(
-		/obj/item/magazine/sniper_762,
-		/obj/item/magazine/lmg_762,
-		/obj/item/magazine/rifle_556,
-		/obj/item/magazine/smg_46
-	)
-
-/obj/structure/interactive/vending/ammo/shotgun
-	name = "shotgun ammo vendor"
-	stored_types = list(
-		/obj/item/bullet_cartridge/shotgun_12/buckshot,
-		/obj/item/bullet_cartridge/shotgun_12/slug,
-		/obj/item/storage/ammo/buckshot,
-		/obj/item/storage/ammo/slug
-	)
-
 /obj/structure/interactive/vending/clothes
 	name = "clothes vendor"
 	icon_state = "clothes"
@@ -164,7 +132,8 @@
 		/obj/item/storage/pillbottle/iron_small,
 		/obj/item/storage/pillbottle/antihol_small,
 		/obj/item/container/blood_pack/full/o_negative,
-		/obj/item/container/blood_pack/full/reptile
+		/obj/item/container/blood_pack/full/reptile,
+		/obj/item/container/medicine/nanopaste
 	)
 
 /obj/structure/interactive/vending/medical/chemistry
@@ -273,18 +242,6 @@
 		/obj/item/instrument/violin
 	)
 */
-
-/obj/structure/interactive/vending/clown/wardrobe
-	name = "clown wardrobe vendor"
-	icon_state = "theater"
-
-	stored_types = list(
-		/obj/item/clothing/mask/gas/clown,
-		/obj/item/clothing/uniform/clown,
-		/obj/item/storage/shoebox/clown,
-		/obj/item/bikehorn,
-		/obj/item/weapon/ranged/reagent_sprayer/spray_bottle/lube
-	)
 
 /obj/structure/interactive/vending/hydroponics/nutri
 	name = "garden vendor"

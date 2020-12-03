@@ -14,6 +14,9 @@
 	if(src.stored_magazine) .["stored_magazine"] = src.stored_magazine.save_item_data(save_inventory)
 	return .
 
+/obj/item/weapon/ranged/bullet/magazine/proc/get_magazine()
+	return stored_magazine
+
 
 /obj/item/weapon/ranged/bullet/magazine/load_item_data_post(var/mob/living/advanced/player/P,var/list/object_data)
 
@@ -77,7 +80,7 @@
 	if(!T)
 		qdel(src)
 	else
-		stored_magazine.force_move(T)
+		stored_magazine.drop_item(T)
 		play(stored_magazine.get_magazine_eject_sound(),T)
 		if(stored_magazine)
 			stored_magazine.update_sprite()
@@ -101,11 +104,14 @@
 	return ..()
 
 /obj/item/weapon/ranged/bullet/magazine/proc/load_new_bullet_from_magazine(var/mob/caller)
-	if(stored_magazine && length(stored_magazine.stored_bullets) && stored_magazine.stored_bullets[1] && !chambered_bullet)
-		var/obj/item/bullet_cartridge/B = stored_magazine.stored_bullets[1]
+
+	var/obj/item/magazine/M = get_magazine()
+
+	if(M && length(M.stored_bullets) && M.stored_bullets[1] && !chambered_bullet)
+		var/obj/item/bullet_cartridge/B = M.stored_bullets[1]
 		if(can_load_chamber(null,B))
-			stored_magazine.stored_bullets -= B
-			B.force_move(src)
+			M.stored_bullets -= B
+			B.drop_item(src,silent=TRUE)
 			chambered_bullet = B
 			return TRUE
 
@@ -146,5 +152,14 @@
 
 		if(sound_strength > 0)
 			play('sound/effects/gun_empty_sound.ogg',caller, pitch = 1 + sound_strength*0.5, volume = 100 * sound_strength)
+
+	return .
+
+/obj/item/weapon/ranged/bullet/magazine/get_examine_list(var/mob/caller)
+
+	. = ..()
+
+	if(stored_magazine)
+		. += div("notice","[length(stored_magazine.stored_bullets)] bullet\s remaining in the magazine.")
 
 	return .

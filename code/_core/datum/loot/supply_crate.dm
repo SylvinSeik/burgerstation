@@ -32,7 +32,6 @@
 		/loot/weapon/big_game_revolver = 10,
 		/loot/weapon/assault_rifle = 10,
 		/loot/weapon/grenade = 10,
-		/loot/weapon/civil_defense_pistol = 10,
 		/loot/weapon/civilian_carbine = 10,
 		/loot/weapon/tungsten = 10,
 		/loot/weapon/commander_revolver = 10,
@@ -68,3 +67,11 @@
 		R.firing_pin = /obj/item/firing_pin/electronic/iff/syndicate
 
 	return ..()
+
+/loot/supply_crate/magic
+	loot_table = list(
+		/loot/enchanting/book = 1,
+		/obj/item/soulgem/common = 5,
+		/obj/item/container/beaker/bottle/large/mana_potion = 10
+	)
+	loot_count = 3

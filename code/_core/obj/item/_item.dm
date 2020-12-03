@@ -2,6 +2,8 @@
 	name = "item"
 	desc = "Oh my god it's an item."
 
+	vis_flags = VIS_INHERIT_ID | VIS_INHERIT_PLANE
+
 	var/value_burgerbux
 
 	var/last_marker //The last person to name this item. Used for moderation purposes.
@@ -31,6 +33,7 @@
 
 	var/is_container = FALSE //Setting this to true will open the below inventories on use.
 	var/dynamic_inventory_count = 0
+	var/obj/hud/inventory/dynamic/dynamic_inventory_type = /obj/hud/inventory/dynamic
 	var/container_max_size = 0 //This item has a container, how much should it be able to hold in each slot?
 	var/container_held_slots = 0 //How much each inventory slot can hold.
 	var/container_blacklist = list()
@@ -69,7 +72,8 @@
 
 	var/crafting_id = null
 
-	var/drop_sound = 'sound/items/drop/accessory.ogg'
+	var/inventory_sound = 'sound/items/drop/accessory.ogg' //Sound when moved to an inventory.
+	var/drop_sound = 'sound/items/drop/accessory.ogg' //Sound when moved elsewhere
 
 	var/list/inventory_sounds = list(
 		'sound/effects/inventory/rustle1.ogg',
@@ -133,6 +137,8 @@
 
 	var/can_hold = TRUE
 	var/can_wear = FALSE
+
+	density = 1
 
 	value = -1
 
@@ -229,7 +235,7 @@
 	last_interacted = null
 
 	if(loc)
-		drop_item()
+		drop_item(silent=TRUE)
 
 	return ..()
 
@@ -263,7 +269,7 @@
 
 	return null
 
-/obj/item/proc/add_to_inventory(var/mob/caller,var/obj/item/object,var/enable_messages = TRUE,var/bypass = FALSE) //We add the object to this item's inventory.
+/obj/item/proc/add_to_inventory(var/mob/caller,var/obj/item/object,var/enable_messages = TRUE,var/bypass = FALSE,var/silent=FALSE) //We add the object to this item's inventory.
 
 	if(!length(inventories))
 		return FALSE
@@ -273,7 +279,7 @@
 	if(object != src)
 		var/obj/hud/inventory/found_inventory = can_add_to_inventory(caller,object,FALSE,bypass)
 		if(found_inventory)
-			found_inventory.add_object(object,enable_messages,bypass)
+			found_inventory.add_object(object,enable_messages,bypass,silent=silent)
 			added = TRUE
 
 	if(enable_messages && caller)
@@ -313,7 +319,7 @@
 			inventories[i].inventory_temperature_mod_mod = container_temperature_mod
 
 	for(var/i=1, i <= dynamic_inventory_count, i++)
-		var/obj/hud/inventory/dynamic/D = new(src)
+		var/obj/hud/inventory/dynamic/D = new dynamic_inventory_type(src)
 		//Doesn't need to be initialized as it's done later.
 		D.id = "dynamic_[i]"
 		D.slot_num = i
@@ -415,6 +421,8 @@
 	if(new_location)
 		update_lighting_for_owner(new_location)
 		last_interacted = new_location.owner
+		pixel_x = initial(pixel_x)
+		pixel_y = initial(pixel_y)
 
 	return TRUE
 
@@ -426,10 +434,10 @@
 	update_lighting_for_owner()
 	return .
 
-/obj/item/proc/on_drop(var/obj/hud/inventory/old_inventory,var/atom/new_loc)
+/obj/item/proc/on_drop(var/obj/hud/inventory/old_inventory,var/atom/new_loc,var/silent=FALSE)
 
 	if(additional_clothing_parent)
-		drop_item(additional_clothing_parent)
+		drop_item(additional_clothing_parent) //This retracts the clothing.
 
 	if(light)
 		light.update(src)
@@ -441,9 +449,6 @@
 			new/obj/effect/temp/item_pickup(NL,2,OL,src,isturf(new_loc) ? "drop" : "transfer")
 
 	update_lighting_for_owner(old_inventory)
-
-	if(drop_sound && isturf(loc) && !qdeleting)
-		play(drop_sound,get_turf(src))
 
 	return TRUE
 
@@ -551,7 +556,7 @@
 			if(defer_object.reagents.volume_current >= defer_object.reagents.volume_max)
 				caller.to_chat(span("warning","\The [defer_object.name] is full!"))
 				return FALSE
-			var/actual_transfer_amount = reagents.transfer_reagents_to(defer_object.reagents,transfer_amount)
+			var/actual_transfer_amount = reagents.transfer_reagents_to(defer_object.reagents,transfer_amount, caller = caller)
 			caller.to_chat(span("notice","You transfer [actual_transfer_amount] units of liquid to \the [defer_object]."))
 		return TRUE
 
@@ -577,10 +582,6 @@
 
 	if(L.dead)
 		caller.to_chat(span("warning","\The [L.name] is dead!"))
-		return FALSE
-
-	if(caller != target && L.is_afk())
-		caller.to_chat(span("warning","\The [L.name]'s mouth is locked shut! They must be suffering from Space Sleep Disorder..."))
 		return FALSE
 
 	return TRUE

@@ -13,8 +13,9 @@
 	)
 
 	size = SIZE_3
+	weight = -10
 
-	worn_layer = LAYER_MOB_CLOTHING_NECK_OVER
+	worn_layer = LAYER_MOB_CLOTHING_ALL
 
 	value = 500
 

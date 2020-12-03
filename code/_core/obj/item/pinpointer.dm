@@ -159,6 +159,8 @@
 	for(var/mob/living/advanced/player/P in all_players)
 		if(P.loyalty_tag != desired_loyalty)
 			continue
+		if(!can_track(P))
+			continue
 		var/name_mod = "[P.real_name] ([P.dead ? "DEAD" : "Alive"], [dir2text(get_dir(caller,P))], [get_dist(src,P)]m)"
 		possible_crew[name_mod] = P
 
@@ -289,7 +291,7 @@
 	var/list/possible_bosses = list()
 
 	for(var/k in SSbosses.tracked_bosses)
-		var/atom/A = SSbosses.tracked_bosses[k]
+		var/atom/A = k
 		if(!can_track(A))
 			continue
 		var/name_mod = "[A.name] ([dir2text(get_dir(caller,A))], [get_dist(src,A)]m)"

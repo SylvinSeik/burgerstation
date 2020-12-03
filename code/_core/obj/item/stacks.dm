@@ -1,13 +1,27 @@
 /obj/item/proc/can_transfer_stacks_to(var/obj/item/I)
-	return istype(src,I) && I != src
+	return istype(src,I) && I != src && I.item_count_max > 1
 
 //Credit goes to Unknown Person
 
 /proc/copy(var/atom/A)
 
-	var/static/list/denyvar = make_associative(list("client","key","loc","x","y","z","type","locs","parent_type","verbs","vars"))
+	var/static/list/denyvar = make_associative(
+		list(
+			"client",
+			"key",
+			"loc",
+			"x",
+			"y",
+			"z",
+			"type",
+			"locs",
+			"parent_type",
+			"verbs",
+			"vars"
+		)
+	)
 
-	var/atom/N = new A.type(A.loc)
+	var/atom/movable/N = new A.type(A.loc)
 
 	for(var/i in A.vars)
 		if(denyvar[i])
@@ -16,6 +30,8 @@
 			N.vars[i] = A.vars[i]
 		catch()
 			log_error("Cannot write var [i]!")
+
+	N.loc = null
 
 	return N
 
@@ -38,14 +54,15 @@
 	if(try_transfer_reagents(caller,defer_object,location,control,params))
 		return TRUE
 
-	if(is_item(defer_object) && src.can_transfer_stacks_to(defer_object))
+	if(is_item(defer_object))
 		var/obj/item/I = defer_object
-		var/stacks_transfered = src.transfer_item_count_to(I)
-		if(stacks_transfered)
-			caller.to_chat("You transfer [stacks_transfered] stacks to \the [I.name].")
-		else
-			caller.to_chat("\The [I.name] is full!")
-		return TRUE
+		if(I.can_transfer_stacks_to(src))
+			var/stacks_transfered = I.transfer_item_count_to(src)
+			if(stacks_transfered)
+				caller.to_chat(span("notice","You transfer [stacks_transfered] stacks to \the [src.name]."))
+			else
+				caller.to_chat(span("notice","You can't transfer any more stacks to \the [src.name], it's full!"))
+			return TRUE
 
 	return ..()
 

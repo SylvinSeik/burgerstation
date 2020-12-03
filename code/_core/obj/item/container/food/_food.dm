@@ -49,11 +49,21 @@
 /obj/item/container/food/get_examine_list(var/mob/examiner)
 	return ..() + div("notice",reagents.get_contents_english())
 
+/obj/item/container/food/proc/on_consumed(var/mob/caller,var/mob/living/target) //When there are no reagents left.
+	qdel(src)
+	return TRUE
+
 /obj/item/container/food/feed(var/mob/caller,var/mob/living/target)
+
 	. = ..()
-	if(. && reagents.volume_current <= 0)
-		qdel(src)
+
+	if(reagents.volume_current <= 0)
+		on_consumed(caller,target)
+
 	return .
+
+/obj/item/container/food/proc/get_calculated_bites(var/total_reagents = 1)
+	return 1 + FLOOR(total_reagents/(BITE_SIZE*2),1)
 
 /obj/item/container/food/get_reagents_to_consume()
 
@@ -66,8 +76,7 @@
 			continue
 		total_reagents += IT.reagents.volume_current
 
-	var/calculated_bites = 1 + FLOOR(total_reagents/(BITE_SIZE*2),1)
-
+	var/calculated_bites = get_calculated_bites(total_reagents)
 	var/reagent_container/temp/T = new(src,1000)
 
 	for(var/i=1,i<=length(inventories),i++)

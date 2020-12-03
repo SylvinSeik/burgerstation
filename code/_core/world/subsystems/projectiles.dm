@@ -13,10 +13,22 @@ SUBSYSTEM_DEF(projectiles)
 
 	var/list/obj/projectile/all_projectiles = list()
 
+/subsystem/projectiles/unclog(var/mob/caller)
+
+	for(var/k in all_projectiles)
+		var/obj/projectile/P = k
+		qdel(P) //Remove is called inside the projectile
+
+	broadcast_to_clients(span("danger","Removed all projectiles."))
+
+	return ..()
+
 /subsystem/projectiles/on_life()
 
 	for(var/k in all_projectiles)
 		var/obj/projectile/P = k
-		P.update_projectile(tick_rate)
+		if(P.update_projectile(tick_rate) == null)
+			log_error("Warning! Projectile [P.get_debug_name()] didn't run update_projectile properly, and thus was deleted.")
+			qdel(P) //Remove is called inside the projectile
 
 	return TRUE

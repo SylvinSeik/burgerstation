@@ -3,6 +3,9 @@
 	var/list/attack_verbs = list("strike","hit","pummel") //Verbs to use
 	var/list/miss_verbs = list("swing")
 	var/weapon_name
+	var/swing_sounds = list(
+		'sound/weapons/fists/swing.ogg'
+	)
 	var/impact_sounds = list(
 		'sound/weapons/fists/punch1.ogg',
 		'sound/weapons/fists/punch2.ogg',
@@ -323,7 +326,7 @@
 					var/mob/living/LA = attacker
 					LA.to_chat(span("warning","Your attack was parried by \the [A.name]!"),CHAT_TYPE_ALL)
 					if(get_dist(A,LA) <= 1)
-						LA.add_status_effect(STAGGER,20,20)
+						LA.add_status_effect(STAGGER,30,30)
 				return FALSE
 		damage_multiplier *= L.get_damage_received_multiplier(attacker,victim,weapon,hit_object,blamed,src)
 
@@ -343,25 +346,28 @@
 	var/defense_rating_attacker = (attacker && attacker.health) ? attacker.health.get_defense(attacker,object_to_check) : list()
 
 	if(debug) log_debug("Calculating [length(damage_to_deal)] damage types...")
+	var/has_fatigue_damage = FALSE
 	for(var/damage_type in damage_to_deal)
 		if(!damage_type)
 			continue
+		if(damage_type == FATIGUE)
+			has_fatigue_damage = TRUE
 		if(debug) log_debug("Calculating [damage_type]...")
 		var/old_damage_amount = damage_to_deal[damage_type] * critical_hit_multiplier
 		if(debug) log_debug("Initial [damage_type] damage: [old_damage_amount].")
 		var/victim_defense = defense_rating_victim[damage_type]
 		if(debug) log_debug("Inital victim's defense against [damage_type]: [victim_defense].")
-		if(victim_defense >= INFINITY) //Defense is infinite. No point in calculating further armor.
+		if(IS_INFINITY(victim_defense)) //Defense is infinite. No point in calculating further armor.
 			damage_to_deal[damage_type] = 0
 			continue
 		if(victim_defense > 0 && attack_damage_penetration[damage_type]) //Penetrate armor only if it exists.
 			victim_defense = max(0,victim_defense - attack_damage_penetration[damage_type])
 			if(debug) log_debug("Victim's [damage_type] defense after penetration: [victim_defense].")
 		if(!ignore_armor_bonus_damage && old_damage_amount && length(defense_rating_attacker) && defense_rating_attacker[damage_type] && (damage_type == ARCANE || damage_type == HOLY || damage_type == DARK)) //Deal bonus damage.
-			if(defense_rating_attacker[damage_type] == INFINITY) //Don't do any magic damage if we resist magic.
+			if(IS_INFINITY(defense_rating_attacker[damage_type])) //Don't do any magic damage if we resist magic.
 				damage_to_deal[damage_type] = 0
 				continue
-			if(victim_defense == INFINITY)
+			if(IS_INFINITY(victim_defense))
 				continue
 			victim_defense -= defense_rating_attacker[damage_type]*0.5
 			if(debug) log_debug("Victim's new [damage_type] defense due to attacker's [defense_rating_attacker[damage_type]] armor: [victim_defense].")
@@ -390,13 +396,11 @@
 	var/total_damage_dealt = 0
 	if(victim.immortal || hit_object.immortal)
 		for(var/damage_type in damage_to_deal_main)
-			if(damage_type == FATIGUE)
-				continue
 			total_damage_dealt += damage_to_deal_main[damage_type]
 	else
 		if(hit_object.health)
-			hit_object.health.adjust_fatigue_loss(damage_to_deal_main[FATIGUE])
 			total_damage_dealt += hit_object.health.adjust_loss_smart(brute=damage_to_deal_main[BRUTE],burn=damage_to_deal_main[BURN],tox=damage_to_deal_main[TOX],oxy=damage_to_deal_main[OXY],update=FALSE)
+			total_damage_dealt += hit_object.health.adjust_fatigue_loss(damage_to_deal_main[FATIGUE])
 		else
 			CRASH_SAFE("ERROR: Tried dealing damage to object [hit_object], but it had no health!")
 			return TRUE
@@ -407,6 +411,8 @@
 	if(is_living(victim))
 		var/mob/living/L = victim
 		L.to_chat(span("warning","Took <b>[round(total_damage_dealt,0.1)]</b> damage to [hit_object == victim ? "yourself" : "your [hit_object.name]"] by \the [attacker == weapon ? "[attacker.name]'s attack" : "[attacker.name]'s [weapon.name]"] (<b>[max(0,victim.health.health_current - total_damage_dealt)]/[victim.health.health_max]</b>)."),CHAT_TYPE_COMBAT)
+		if(has_fatigue_damage && L.ai && L.has_status_effect(FATIGUE) && !L.has_status_effect(SLEEP))
+			L.add_status_effect(SLEEP,600,600)
 
 	if(is_living(blamed) && victim.health && blamed != victim) //TODO: Seperate log for blamed.
 		var/mob/living/L = blamed
@@ -468,6 +474,11 @@
 	if(victim != hit_object)
 		hit_object.on_damage_received(hit_object,attacker,weapon,damage_to_deal,total_damage_dealt,critical_hit_multiplier,stealthy)
 
+	if(istype(weapon,/obj/item/weapon))
+		var/obj/item/weapon/W = weapon
+		if(W.enchantment)
+			W.enchantment.on_hit(attacker,victim,weapon,hit_object,blamed,total_damage_dealt)
+
 	return TRUE
 
 /damagetype/proc/post_on_hit(var/atom/attacker,var/atom/victim,var/atom/weapon,var/atom/hit_object,var/atom/blamed,var/total_damage_dealt=0)
@@ -516,16 +527,25 @@
 		play(pick(impact_sounds_flesh),get_turf(hit_object))
 
 	if(length(impact_sounds))
-		play(pick(impact_sounds),get_turf(hit_object))
-
-	create_alert(VIEW_RANGE,victim,attacker,ALERT_LEVEL_CAUTION)
+		var/turf/T = get_turf(hit_object)
+		play(pick(impact_sounds),T)
+		create_alert(VIEW_RANGE,T,attacker,ALERT_LEVEL_CAUTION)
 
 	return TRUE
 
+/damagetype/proc/do_swing_sound(var/atom/attacker,var/atom/victim,var/atom/weapon)
+	if(length(swing_sounds))
+		var/turf/T = get_turf(victim)
+		play(pick(swing_sounds),T)
+		return TRUE
+	return FALSE
+
 /damagetype/proc/do_miss_sound(var/atom/attacker,var/atom/victim,var/atom/weapon)
 	if(length(miss_sounds))
-		play(pick(miss_sounds),get_turf(victim))
-		create_alert(VIEW_RANGE,victim,attacker,ALERT_LEVEL_NOISE)
+		var/turf/T = get_turf(victim)
+		play(pick(miss_sounds),T)
+		return TRUE
+	return FALSE
 
 /damagetype/proc/do_attack_animation(var/atom/attacker,var/atom/victim,var/atom/weapon,var/atom/hit_object)
 
@@ -551,6 +571,8 @@
 			animate(transform = matrix(), time = FLOOR(caller_attack_delay*0.99,1), flags = ANIMATION_LINEAR_TRANSFORM)
 
 	. = CEILING(weapon_attack_delay*0.125,1)
+
+	do_swing_sound(attacker,victim,weapon)
 
 	if(draw_weapon)
 		new /obj/effect/temp/impact/weapon_clone(get_turf(attacker),. * 2,victim,attacker,weapon)

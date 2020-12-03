@@ -3,6 +3,7 @@
 #define QUICK_VOTE FALSE
 #define SHOW_HOOKS FALSE
 #define ENABLE_TRACKS FALSE
+#define DEBUG_PATHS FALSE
 
 #define LOAD_GROUND_MAP TRUE
 #define ENABLE_STOPLAG TRUE
@@ -12,7 +13,7 @@
 
 //Game Options
 #define FPS_CLIENT 60 //0 Means synced. Also this is default, players can change this for themselves.
-#define FPS_SERVER 30
+#define FPS_SERVER 20
 
 #define NEXT_MAP_FILE "data/server/next_map.txt"
 
@@ -31,7 +32,7 @@
 #define MAX_ZOOM 4 //This is for z-zoom.
 #define MIN_ZOOM 1
 
-#define ZOOM_RANGE 8
+#define ZOOM_RANGE 6
 #define VIEW_RANGE 11
 #define AI_DETECTION_RANGE VIEW_RANGE * 0.6
 #define AI_DETECTION_RANGE_NOISE VIEW_RANGE
@@ -72,8 +73,6 @@
 #define ENABLE_MAPLOAD TRUE
 #define ENABLE_LIGHTING TRUE
 #define ENABLE_TURFGEN TRUE
-
-#define ENABLE_HIJACK FALSE
 
 #define ENABLE_ATMOS FALSE
 

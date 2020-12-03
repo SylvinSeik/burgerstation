@@ -1,6 +1,6 @@
 /mob/living/simple/npc/ash_drake
 	name = "ash drake"
-	id = "ash_drake"
+	boss_icon_state = "ash_drake"
 	icon = 'icons/mob/living/simple/lavaland/ashdrake.dmi'
 	icon_state = "living"
 	damage_type = /damagetype/unarmed/claw/
@@ -14,7 +14,7 @@
 
 	stun_angle = 0
 
-	health_base = 2500
+	health_base = 3000
 
 	var/boss_state = 0
 	//0 = walking
@@ -44,11 +44,6 @@
 	)
 
 	fatigue_from_block_mul = 0
-
-	butcher_contents = list(
-		/obj/item/clothing/overwear/armor/drake_armor,
-		/obj/item/soapstone/orange
-	)
 
 	status_immune = list(
 		STUN = TRUE,
@@ -175,12 +170,12 @@
 	return .
 
 /mob/living/simple/npc/ash_drake/proc/shoot_fireball(var/atom/desired_target)
-	shoot_projectile(src,desired_target,null,null,/obj/projectile/magic/fireball/,/damagetype/ranged/magic/fireball,16,16,0,TILE_SIZE*0.75,1,"#FFFFFF",0,0,1,iff_tag,loyalty_tag)
+	shoot_projectile(src,desired_target,null,null,/obj/projectile/magic/fireball/lava,/damagetype/ranged/magic/fireball,16,16,0,TILE_SIZE*0.75,1,"#FFFFFF",0,0,1,iff_tag,loyalty_tag)
 
 /mob/living/simple/npc/ash_drake/post_death()
 	..()
 	icon_state = "dead"
-	CREATE(/obj/structure/interactive/crate/necro,get_turf(src))
+	CREATE(/obj/structure/interactive/crate/necro/ash_drake,get_turf(src))
 	update_sprite()
 
 

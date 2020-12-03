@@ -1,11 +1,3 @@
-#define SHUTTLE_STATUS_NONE "none"
-
-#define SHUTTLE_STATE_LAUNCHING "launching" //We're going to launch.
-#define SHUTTLE_STATE_TRANSIT "transit" //We're currently in transit.
-#define SHUTTLE_STATE_LANDING "landing" //We're currently landing.
-#define SHUTTLE_STATE_LANDED "landed" //We have landed.
-#define SHUTTLE_STATE_WAITING "waiting" //We have enough people to launch, now we wait just for more, just in case.
-
 var/global/list/all_shuttle_controlers = list()
 
 /obj/shuttle_controller
@@ -96,11 +88,11 @@ var/global/list/all_shuttle_controlers = list()
 	if(start_sound)
 		play(start_sound,src,range_min=VIEW_RANGE,range_max=VIEW_RANGE*3)
 		if(last_caller)
-			create_alert(VIEW_RANGE*3,src,last_caller,ALERT_LEVEL_CAUTION)
+			create_alert(VIEW_RANGE*3,src.loc,last_caller,ALERT_LEVEL_CAUTION)
 
 	var/area/A = get_area(src)
 	if(!desired_transit_time) desired_transit_time = default_transit_time
-	transit_time = max(10,desired_transit_time)
+	transit_time = max(1,desired_transit_time)
 	if(A.type == transit_start)
 		transit_target = transit_end
 		transit_source = transit_start
@@ -165,7 +157,7 @@ var/global/list/all_shuttle_controlers = list()
 			if(progress_sound)
 				play(progress_sound,src,range_min=VIEW_RANGE,range_max=VIEW_RANGE*3)
 				if(last_caller)
-					create_alert(VIEW_RANGE*3,src,last_caller,ALERT_LEVEL_CAUTION)
+					create_alert(VIEW_RANGE*3,src.loc,last_caller,ALERT_LEVEL_CAUTION)
 			state = SHUTTLE_STATE_TRANSIT
 			time = 0
 
@@ -185,7 +177,7 @@ var/global/list/all_shuttle_controlers = list()
 			if(end_sound)
 				play(end_sound,src,range_min=VIEW_RANGE,range_max=VIEW_RANGE*3)
 				if(last_caller)
-					create_alert(VIEW_RANGE,src,last_caller,ALERT_LEVEL_CAUTION)
+					create_alert(VIEW_RANGE,src.loc,last_caller,ALERT_LEVEL_CAUTION)
 			state = SHUTTLE_STATE_LANDED
 			time = 0
 			transit_source = null
@@ -208,7 +200,6 @@ var/global/list/all_shuttle_controlers = list()
 	var/area/transit/ending_transit = transit_areas[ending_transit_id]
 
 	//log_debug("SHUTTLE: [src.get_debug_name()] moving from [starting_transit.get_debug_name()] to [ending_transit.get_debug_name()].")
-
 
 	var/starting_cord_x = starting_transit.x
 	var/starting_cord_y = starting_transit.y
@@ -245,23 +236,34 @@ var/global/list/all_shuttle_controlers = list()
 		if(!replacing_turf)
 			//log_error("Warning: Could not find a replacing turf for [src.get_debug_name()] at [ending_cord_x + offset_x],[ending_cord_y + offset_y],[ending_cord_z].")
 			continue
+
 		for(var/k in replacing_turf.contents)
 			var/atom/movable/M = k
 			M.on_crush()
+		if(!replacing_turf.stored_shuttle_items) replacing_turf.stored_shuttle_items = list()
+		var/list/stored_items = list()
+		for(var/obj/item/I in replacing_turf.contents) //Second pass. Get everything that might've been crushed.
+			stored_items += I
+			I.force_move(src)
 		replacing_turf.change_turf(T.type,TRUE,TRUE)
+		replacing_turf.stored_shuttle_items = stored_items
+
 		for(var/k in T.contents)
 			var/atom/movable/M = k
 			CHECK_TICK(75,FPS_SERVER)
 			if(!M.allow_shuttle_move) //For things like light.
 				continue
+			if(M.loc != T)
+				continue
 			M.move_delay = SECONDS_TO_TICKS(3)
 			M.force_move(replacing_turf)
 			if(enable_shuttle_throwing)
 				objects_to_throw += M
+		for(var/k in T.stored_shuttle_items)
+			var/obj/item/I = k
+			I.drop_item(T)
+			T.stored_shuttle_items -= I
 		T.change_turf(starting_transit.transit_turf,TRUE,TRUE)
-		//found_turfs++
-
-	//log_debug("[src.get_debug_name()]: Found [found_turfs] turfs to replace.")
 
 	if(enable_shuttle_throwing)
 		for(var/k in objects_to_throw)

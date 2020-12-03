@@ -31,8 +31,7 @@
 	name = "Horde Mode (Zombies)"
 	desc = "Fight off an endless wave of non-infectious Zombies while attempting to complete objectives. Note that the rate of which zombies spawn is increased significantly every minute!"
 	enemy_types_to_spawn = list(
-		/mob/living/advanced/npc/zombie/greytide = 100,
-		/mob/living/advanced/npc/zombie/captain = 1,
+		/mob/living/advanced/npc/zombie/greytide = 50,
 		/mob/living/advanced/npc/zombie/botanist = 10,
 		/mob/living/advanced/npc/zombie/chaplain = 5,
 		/mob/living/advanced/npc/zombie/security = 10,
@@ -52,9 +51,9 @@
 	name = "Horde Mode (Syndicate)"
 	desc = "Fight off an endless wave of traitorous syndicate soliders while attempting to completele objectives. Some Syndicate soliders may have spells!"
 	enemy_types_to_spawn = list(
-		/mob/living/advanced/npc/syndicate = 50,
-		/mob/living/advanced/npc/sorcerer = 5,
-		/mob/living/simple/npc/silicon/squats = 1
+		/mob/living/advanced/npc/syndicate = 10,
+		/mob/living/advanced/npc/sorcerer = 4,
+		/mob/living/simple/npc/silicon/syndieborg = 1
 	)
 	hidden = FALSE
 
@@ -108,6 +107,36 @@
 		/mob/living/simple/npc/cult/construct/behemoth = 10,
 		/mob/living/simple/npc/cult/construct/chosen = 1,
 		/mob/living/simple/npc/cult/construct/floating = 25,
-		/mob/living/simple/npc/cult/cultist = 100
+		/mob/living/advanced/npc/cultist = 70,
+		/mob/living/advanced/npc/cultist/hard = 30
 	)
 	hidden = FALSE
+
+
+/gamemode/horde/boss_rush
+	name = "Horde Mode (Boss Rush)"
+	desc = "Oh god oh fuck."
+	enemy_types_to_spawn = list(
+		/mob/living/simple/npc/can_man = 1,
+		/mob/living/simple/npc/ash_drake = 4,
+		/mob/living/simple/npc/bubblegum = 3,
+		/mob/living/simple/npc/colossus = 3,
+		/mob/living/simple/npc/herald = 1,
+		/mob/living/simple/npc/goliath/broodmother = 1
+	)
+	hidden = TRUE
+
+	spawn_on_markers = FALSE
+
+	enemies_to_spawn_base = 4
+	enemies_to_spawn_per_player = 0
+	enemies_to_spawn_per_minute = 0
+
+/gamemode/horde/boss_rush/get_wave_size()
+	return 1
+
+/gamemode/horde/boss_rush/create_horde_mob(var/desired_loc)
+	var/mob/living/L = ..()
+	L.set_loyalty_tag("Boss")
+	L.set_iff_tag("Boss")
+	return L

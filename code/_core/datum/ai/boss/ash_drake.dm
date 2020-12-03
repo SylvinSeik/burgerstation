@@ -18,7 +18,6 @@
 
 /ai/boss/ash_drake/handle_attacking()
 
-
 	if(owner_as_ash_drake.boss_state == 1)
 		if(fly_time >= 30)
 			owner_as_ash_drake.land()
@@ -28,8 +27,9 @@
 	else if(objective_attack)
 		if(!owner_as_ash_drake.boss_state)
 			var/distance = get_dist(owner,objective_attack)
-			var/fly_chance = max(0,distance*10 - 50) + max(0,failed_attack_frames - 50)
-			var/shoot_chance = max(0,distance*10 - 25) + max(0,failed_attack_frames - 25)
+			var/health_mod = (1 - (owner.health.health_current/owner.health.health_max))*25
+			var/fly_chance = max(0,distance*10 - 25) + failed_attack_frames + health_mod
+			var/shoot_chance = max(0,distance*10 - 25) + failed_attack_frames + health_mod
 			if(!owner_as_ash_drake.health || (objective_attack && get_dist(owner,objective_attack) <= attack_distance_max))
 				failed_attack_frames = 0
 				return ..()
@@ -37,10 +37,12 @@
 				owner_as_ash_drake.fly()
 				var/fly_multiplier = clamp(owner_as_ash_drake.health.health_current / owner_as_ash_drake.health.health_max,0.5,1)
 				fly_delay = initial(fly_delay) * fly_multiplier
+				failed_attack_frames = 0
 			else if(fireball_delay <= 0 && prob(shoot_chance))
 				owner_as_ash_drake.shoot_fireball(objective_attack)
 				var/fireball_multiplier = clamp(owner_as_ash_drake.health.health_current / owner_as_ash_drake.health.health_max,0.25,1)
 				fireball_delay = initial(fireball_delay) * fireball_multiplier
+				failed_attack_frames = 0
 			else
 				failed_attack_frames += 1
 

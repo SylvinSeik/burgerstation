@@ -19,7 +19,6 @@
 
 	value = 40
 
-
 /obj/item/clothing/mask/gas/clown
 	name = "clown mask"
 	icon = 'obj/item/clothing/masks/clown.dmi'
@@ -41,7 +40,6 @@
 
 	value = 120
 
-
 /obj/item/clothing/mask/gas/mining
 	name = "advanced gas mask"
 	icon = 'obj/item/clothing/masks/mining.dmi'
@@ -61,6 +59,14 @@
 	size = SIZE_2
 
 	value = 160
+
+/obj/item/clothing/mask/gas/space_cop
+	name = "space cop's mask"
+	icon = 'obj/item/clothing/masks/space_cop.dmi'
+	flags_clothing = FLAG_CLOTHING_NOBEAST_HEAD
+	desc = "Baton not included."
+	desc_extended = "A space-age gas mask. Filters out most forms of gas."
+	rarity = RARITY_UNCOMMON
 
 /obj/item/clothing/mask/gas/poly
 	name = "gas mask"
@@ -94,6 +100,13 @@
 		"filter" = COLOR_PLASTEEL
 	)
 
+/obj/item/clothing/mask/gas/poly/space_military
+	polymorphs = list(
+		"base" = COLOR_WHITE,
+		"eyes" = COLOR_BLACK,
+		"filter" = COLOR_PLASTEEL
+	)
+
 /obj/item/clothing/mask/gas/poly/engineering
 	polymorphs = list(
 		"base" = COLOR_BROWN,
@@ -121,3 +134,4 @@
 		"eyes" = COLOR_SCIENCE,
 		"filter" = COLOR_METAL
 	)
+

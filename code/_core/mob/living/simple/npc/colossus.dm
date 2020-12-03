@@ -1,6 +1,6 @@
 /mob/living/simple/npc/colossus
 	name = "colossus"
-	id = "colossus"
+	boss_icon_state = "colossus"
 	icon = 'icons/mob/living/simple/lavaland/colossus.dmi'
 	icon_state = "colossus"
 	damage_type = /damagetype/unarmed/claw/
@@ -14,9 +14,11 @@
 
 	stun_angle = 0
 
-	health_base = 2500
+	health_base = 3000
 
 	attack_range = 2
+
+	move_delay = DECISECONDS_TO_TICKS(10)
 
 	force_spawn = TRUE
 	boss = TRUE
@@ -53,8 +55,8 @@
 		FIRE = TRUE
 	)
 
-	iff_tag = "colossus"
-	loyalty_tag = "colossus"
+	iff_tag = "Colossus"
+	loyalty_tag = "Colossus"
 
 	fatigue_from_block_mul = 0
 
@@ -70,7 +72,7 @@
 
 /mob/living/simple/npc/colossus/post_death()
 	. = ..()
-	CREATE(/obj/structure/interactive/crate/necro,get_turf(src))
+	CREATE(/obj/structure/interactive/crate/necro/colossus,get_turf(src))
 	animate(src, pixel_z = 64, time = 30)
 	return .
 

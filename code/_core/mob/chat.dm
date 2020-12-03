@@ -55,13 +55,21 @@ var/regex/vowels = new("\[aeiou\]", "i")
 
 	return FALSE
 
+/proc/tooltip(var/text,var/tooltip)
+	if(!tooltip)
+		return text
+	world.log << "Penis."
+	return div("tooltip","[text][div("tooltip_text",tooltip)]")
+
+/*
 /mob/proc/to_chat_language(var/text, var/chat_type=CHAT_TYPE_INFO, var/language = LANGUAGE_BASIC, var/language_text = "Blah blah blah.")
 	if(!length(known_languages) || !known_languages[language])
 		return to_chat(language_text,chat_type)
-	return to_chat(text,chat_type)
+	return to_chat(tooltip(text,language_text),chat_type)
+*/
 
 
-/mob/proc/do_say(var/text_to_say, var/should_sanitize = TRUE, var/talk_type_to_use = TEXT_TALK)
+/mob/proc/do_say(var/text_to_say, var/should_sanitize = TRUE, var/talk_type_to_use = TEXT_TALK,var/talk_range=TALK_RANGE,var/language_to_use=null)
 
 	if(client && !check_spam(client))
 		return FALSE
@@ -98,18 +106,18 @@ var/regex/vowels = new("\[aeiou\]", "i")
 		do_emote(final_emote)
 		return TRUE
 
-	var/language_to_use = LANGUAGE_BASIC
-	var/frequency_to_use = null
-
 	var/list/available_languages = list()
-	if(client)
-		for(var/letter_key in client.macros.language_keys)
-			var/language_key = client.macros.language_keys[letter_key]
-			if(!known_languages[language_key])
-				continue
-			available_languages[letter_key] = language_key
-	//TODO: MAKE IT SO THAT NPCS CAN USE LANGUAGES HERE.
 
+	if(!language_to_use)
+		language_to_use = LANGUAGE_BASIC
+		if(client)
+			for(var/letter_key in client.macros.language_keys)
+				var/language_key = client.macros.language_keys[letter_key]
+				if(!known_languages[language_key])
+					continue
+				available_languages[letter_key] = language_key
+
+	var/frequency_to_use = null
 
 	if(first_character == "." || first_character == ",")
 		var/old_first = first_character
@@ -129,6 +137,7 @@ var/regex/vowels = new("\[aeiou\]", "i")
 			else
 				to_chat(span("warning","You don't have that radio key!"))
 				return FALSE
+
 	else if(first_character == ";") //Common radio.
 		frequency_to_use = -1
 		text_to_say = trim(copytext(text_to_say,2,0))
@@ -144,10 +153,10 @@ var/regex/vowels = new("\[aeiou\]", "i")
 					to_chat(span("warning","You don't know that language!"))
 					return FALSE
 
-	else if(has_suffix(text_to_say,"!"))
-		talk_type_to_use = TEXT_YELL
+	if(has_suffix(text_to_say,"!"))
+		talk_range = YELL_RANGE
 
-	if(frequency_to_use)
+	if(frequency_to_use && talk_type_to_use == TEXT_TALK)
 		talk_type_to_use = TEXT_RADIO
 
 	text_to_say = trim(mod_speech(text_to_say))
@@ -155,7 +164,7 @@ var/regex/vowels = new("\[aeiou\]", "i")
 	if(should_sanitize && src.client)
 		text_to_say = police_input(src.client,text_to_say)
 
-	talk(src,src,text_to_say,talk_type_to_use,frequency_to_use,language_to_use)
+	talk(src,src,text_to_say,talk_type_to_use,frequency_to_use,language_to_use,talk_range)
 
 	return text_to_say
 
@@ -168,7 +177,7 @@ var/regex/vowels = new("\[aeiou\]", "i")
 		return FALSE
 
 	if(!(emote_text in known_emotes))
-		if(messages) to_chat("Invalid emote!")
+		if(messages) to_chat("Invalid emote: [emote_text]!")
 		return FALSE
 
 	if(!SSemote.all_emotes[emote_text])
@@ -186,5 +195,19 @@ var/regex/vowels = new("\[aeiou\]", "i")
 
 	if(dead)
 		return FALSE
+
+	return ..()
+
+
+/mob/on_listen(var/atom/speaker,var/datum/source,var/text,var/language_text,var/talk_type,var/frequency, var/language = LANGUAGE_BASIC,var/talk_range=TALK_RANGE)
+
+	if(client)
+		var/knows_language = length(known_languages) && known_languages[language]
+		var/formatted_speech
+		if(!knows_language && language_text)
+			formatted_speech = format_speech(speaker,source,language_text,talk_type,frequency,language,talk_range,knows_language)
+		else
+			formatted_speech = format_speech(speaker,source,text,talk_type,frequency,language,talk_range,knows_language)
+		to_chat(formatted_speech,CHAT_TYPE_SAY) //Ears are in game. NEVER CHANGE CHAT_TYPE_SAY OR ELSE YOU'LL SPEND 1 HOUR DEBUGGING THIS LIKE I DID.
 
 	return ..()

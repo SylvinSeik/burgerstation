@@ -35,8 +35,8 @@
 	liquid = -0.75
 
 	heated_reagent = /reagent/ash
-	heated_reagent_temp = 400
-	heated_reagent_amount = 1
+	heated_reagent_temp = 500
+	heated_reagent_amount = 0
 	heated_reagent_mul = 0.01
 
 /reagent/iron //Found while mining iron ore deposits
@@ -56,7 +56,7 @@
 	if(is_living(owner))
 		var/mob/living/L = owner
 		if(L.blood_type && ispath(L.blood_type,/reagent/blood))
-			L.blood_volume = clamp(L.blood_volume + .*3,0,L.blood_volume_max)
+			L.blood_volume = clamp(L.blood_volume + .*2,0,L.blood_volume_max)
 			L.queue_health_update = TRUE
 
 	return .
@@ -134,7 +134,7 @@
 	liquid = -0.25
 
 /reagent/salt
-	name = "table salt"
+	name = "ionized table salt"
 	desc = "Down here, everything is salt."
 	color = "#FFFFF4"
 	alpha = 235
@@ -144,13 +144,21 @@
 
 	liquid = -0.9
 
+/reagent/salt/on_metabolize_stomach(var/atom/owner,var/reagent_container/container,var/starting_volume=0,var/multiplier=1)
+
+	. = ..()
+
+	var/mob/living/L = owner
+	L.add_hydration(.*-10)
+
+
 /reagent/salt/sodium_chloride
 	name = "sodium chloride"
 	desc = "The purest form of salt. Harvested only from the saltiest of Burgerstation players."
 	color = "#FFFFFF"
 	alpha = 255
 
-	flavor = "salt"
+	flavor = "disgusting salt"
 	flavor_strength = 10
 
 	liquid = -1
@@ -221,7 +229,7 @@
 	. = ..()
 
 	if(owner && owner.health)
-		owner.health.adjust_loss_smart(tox=.*2)
+		owner.health.adjust_loss_smart(tox=.*2,robotic=FALSE)
 
 	return .
 
@@ -230,7 +238,7 @@
 	. = ..()
 
 	if(owner && owner.health)
-		owner.health.adjust_loss_smart(tox=.*4)
+		owner.health.adjust_loss_smart(tox=.*4,robotic=FALSE)
 
 	return .
 

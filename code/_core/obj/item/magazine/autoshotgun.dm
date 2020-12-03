@@ -1,5 +1,5 @@
 /obj/item/magazine/shotgun_auto
-	name = "\improper 12 gauge AS-12 magazine"
+	name = "\improper 20g bulldog magazine"
 	desc = "IT'S NOT A CLIP. IT'S A MAGAZINE."
 	desc_extended = "Contains slug shells for a magazine-fed bullpup shotgun. Make sure you're trying to use the right caliber."
 	icon = 'icons/obj/item/magazine/auto_shotgun.dmi'
@@ -7,19 +7,18 @@
 	bullet_count_max = 9
 
 	weapon_whitelist = list(
-		/obj/item/weapon/ranged/bullet/magazine/shotgun/bull = TRUE
+		/obj/item/weapon/ranged/bullet/magazine/shotgun/bulldog = TRUE
 	)
 
-	ammo = /obj/item/bullet_cartridge/shotgun_12/slug
+	ammo = /obj/item/bullet_cartridge/shotgun_20/slug
 
-	bullet_length_min = 18
-	bullet_length_best = 18.5
-	bullet_length_max = 19
+	bullet_length_min = 17
+	bullet_length_best = 17.5
+	bullet_length_max = 18
 
-	bullet_diameter_min = 18
-	bullet_diameter_best = 18.5
-	bullet_diameter_max = 19
-
+	bullet_diameter_min = 17
+	bullet_diameter_best = 17.5
+	bullet_diameter_max = 18
 
 	size = SIZE_2
 
@@ -31,17 +30,9 @@
 	ammo = null
 
 /obj/item/magazine/shotgun_auto/buckshot
-	name = "\improper 12 gauge AS-12 magazine (buckshot)"
-	ammo = /obj/item/bullet_cartridge/shotgun_12/buckshot
+	name = "\improper 20g bulldog magazine (buckshot)"
+	ammo = /obj/item/bullet_cartridge/shotgun_20/buckshot
 
 /obj/item/magazine/shotgun_auto/slug
-	name = "\improper 12 gauge AS-12 magazine (slug)"
-	ammo = /obj/item/bullet_cartridge/shotgun_12/slug
-
-/obj/item/magazine/shotgun_auto/fire
-	name = "\improper 12 gauge AS-12 magazine (fire)"
-	ammo = /obj/item/bullet_cartridge/shotgun_12/fire
-
-/obj/item/magazine/shotgun_auto/flechette
-	name = "\improper 12 gauge AS-12 magazine (flechette)"
-	ammo = /obj/item/bullet_cartridge/shotgun_12/flechette
+	name = "\improper 20g bulldog magazine magazine (slug)"
+	ammo = /obj/item/bullet_cartridge/shotgun_20/slug

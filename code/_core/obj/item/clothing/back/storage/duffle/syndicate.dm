@@ -12,6 +12,8 @@
 
 	value = 200
 
+	weight = 0
+
 
 
 
@@ -52,7 +54,7 @@
 	new /obj/item/magazine/shotgun_auto/empty(src)
 	new /obj/item/magazine/shotgun_auto/empty(src)
 	//1 weapon
-	new /obj/item/weapon/ranged/bullet/magazine/shotgun/bull(src)
+	new /obj/item/weapon/ranged/bullet/magazine/shotgun/bulldog(src)
 	return ..()
 
 /obj/item/clothing/back/storage/dufflebag/syndicate/ammo

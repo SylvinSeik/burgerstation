@@ -87,6 +87,7 @@
 	var/assistance = 1
 	//0 = Helps no one but themselves.
 	//1 = Helps people with the same loyalty tag as them.
+	var/predict_attack = TRUE //Set to true if you want to predict if the target will attack the owner.
 
 	//Roaming Stuff. Mostly read only.
 	var/roam = FALSE
@@ -99,6 +100,8 @@
 	var/delete_on_no_path = FALSE
 
 	var/idle_time = 0
+
+	var/ignore_hazard_turfs = FALSE
 
 /ai/Destroy()
 	if(owner) owner.ai = null
@@ -187,6 +190,9 @@
 	path_start_turf = get_turf(owner)
 	var/Vector3D/last_path = desired_path[length(desired_path)]
 	path_end_turf = locate(last_path.x,last_path.y,last_path.z)
+
+	HOOK_CALL("set_path")
+
 	return TRUE
 
 
@@ -216,7 +222,7 @@
 	if(owner.has_status_effects(STUN,SLEEP,PARALYZE))
 		return FALSE
 
-	if(resist_grabs && owner.grabbing_hand && owner.next_resist <= world.time && is_enemy(owner.grabbing_hand.owner))
+	if(resist_grabs && owner.grabbing_hand && owner.next_resist <= world.time && is_enemy(owner.grabbing_hand.owner,FALSE))
 		owner.resist()
 		return FALSE
 
@@ -258,10 +264,45 @@
 	if(owner.move_delay <= 0)
 		handle_movement_reset()
 		handle_movement()
+		handle_movement_checks()
 
 	owner.handle_movement(tick_rate)
 
 	return TRUE
+
+/ai/proc/can_enter_turf(var/turf/T)
+
+	if(!ignore_hazard_turfs && istype(T,/turf/simulated/hazard/))
+		return FALSE
+
+	return TRUE
+
+
+/ai/proc/handle_movement_checks() //Stops crowding/stacking/grouping.
+
+	var/turf/T
+
+	if(owner.move_dir)
+		T = get_step(owner,owner.move_dir)
+		var/turf/T2 = get_turf(owner)
+		if(!can_enter_turf(T) && can_enter_turf(T2))
+			owner.move_dir = 0x0
+			return TRUE
+	else
+		T = get_turf(owner)
+
+	for(var/mob/living/L in T.contents)
+		if(L == owner)
+			continue
+		if(L.dead)
+			continue
+		if(owner.move_dir && !L.move_dir)
+			owner.move_dir = 0x0
+		else
+			owner.move_dir = pick(DIRECTIONS_ALL)
+		return TRUE
+
+	return FALSE
 
 /ai/proc/attack_message()
 	return TRUE
@@ -356,13 +397,6 @@
 				frustration_path = 0
 			else
 				owner.move_dir = get_dir(owner,locate(desired_node.x,desired_node.y,desired_node.z))
-				if(length(SSai.stuck_turfs))
-					var/turf/turf_to_check = get_step(owner,owner.move_dir)
-					var/turf/we_fucked_anyways = get_turf(owner)
-					if(SSai.stuck_turfs[turf_to_check] && !SSai.stuck_turfs[we_fucked_anyways])
-						owner.move_dir = turn(owner.move_dir,180)
-					if(owner.old_turf && owner.old_turf == get_step(owner,owner.move_dir))
-						SSai.stuck_turfs[owner.old_turf] = TRUE
 		else
 			start_turf = get_turf(owner)
 			set_path(null)
@@ -375,11 +409,6 @@
 	if(frustration_path > frustration_path_threshold)
 
 		frustration_path = 0
-
-		var/turf/bad_turf = get_turf(owner)
-
-		if(bad_turf)
-			SSai.stuck_turfs[bad_turf] = TRUE
 
 		var/obj/marker/map_node/N_start = find_closest_node(owner)
 		if(!N_start)
@@ -465,18 +494,6 @@
 
 	return FALSE
 
-/ai/proc/handle_movement_crowding()
-
-	var/living_count = 0
-	var/turf/T = get_turf(owner)
-	for(var/mob/living/L in T.contents)
-		living_count++
-		if(living_count >= 2)
-			sidestep_next = TRUE
-			return TRUE
-
-	return FALSE
-
 /ai/proc/handle_movement_reset()
 	owner.movement_flags = MOVEMENT_NORMAL
 	owner.move_dir = 0x0
@@ -485,9 +502,6 @@
 /ai/proc/handle_movement()
 
 	if(handle_movement_sidestep())
-		return TRUE
-
-	if(handle_movement_crowding())
 		return TRUE
 
 	if(handle_movement_path_frustration())
@@ -639,10 +653,10 @@
 	if(L.immortal && !ignore_immortal)
 		return FALSE
 
-	if(timeout_threshold && L.client && L.client.inactivity >= timeout_threshold)
+	if(timeout_threshold && L.client && L.client.inactivity >= DECISECONDS_TO_TICKS(timeout_threshold))
 		return FALSE
 
-	if(!is_enemy(L))
+	if(!is_enemy(L,FALSE))
 		return FALSE
 
 	if(!L.can_be_attacked(owner))
@@ -655,7 +669,7 @@
 
 	return TRUE
 
-/ai/proc/is_enemy(var/atom/A)
+/ai/proc/is_enemy(var/atom/A,var/safety_check=TRUE)
 
 	if(istype(A,/mob/living/vehicle/))
 		var/mob/living/vehicle/V = A
@@ -668,13 +682,16 @@
 
 	if(is_living(A))
 		var/mob/living/L = A
-		if(L.ai && L.ai.objective_attack)
-			if(L.ai.objective_attack == owner)
-				return TRUE
-			if(assistance == 1 && is_living(L.ai.objective_attack))
-				var/mob/living/L2 = L.ai.objective_attack
-				if(L2.loyalty_tag == owner.loyalty_tag)
+		if(L.ai)
+			if(L.ai.objective_attack)
+				if(L.ai.objective_attack == owner)
 					return TRUE
+				if(assistance == 1 && is_living(L.ai.objective_attack))
+					var/mob/living/L2 = L.ai.objective_attack
+					if(L2.loyalty_tag == owner.loyalty_tag)
+						return TRUE
+			if(predict_attack && !safety_check && L.ai.is_enemy(owner,TRUE))
+				return TRUE
 
 	switch(aggression)
 		if(0)
@@ -691,6 +708,8 @@
 			return owner.loyalty_tag != L.loyalty_tag
 		if(3)
 			return TRUE
+
+
 
 	return FALSE
 
@@ -734,14 +753,24 @@
 		return 100
 
 	var/distance = get_dist(owner,A)
-	if(distance <= 1)
-		return 100
-
-	. = 100
+	switch(distance)
+		if(1)
+			return 100
+		if(1 to VIEW_RANGE)
+			. = 100
+		if(VIEW_RANGE to VIEW_RANGE+ZOOM_RANGE)
+			. = 50
+		if(VIEW_RANGE+ZOOM_RANGE to INFINITY)
+			. = 25
 
 	var/turf/T = get_turf(A)
 
-	var/darkness = T.darkness*2
+	var/darkness = 0
+	switch(T.darkness)
+		if(-1 to 0.5)
+			darkness = 0.5 + T.darkness
+		if(0.5 to 1)
+			darkness = 1
 	var/atom_alpha = A.alpha
 	if(alert_level == ALERT_LEVEL_COMBAT)
 		atom_alpha *= 2
@@ -749,8 +778,7 @@
 
 	. *= clamp(atom_alpha/255,0,1) * darkness
 
-	if(distance > VIEW_RANGE)
-		. *= 0.25
+
 
 	return .
 
@@ -853,7 +881,7 @@
 	if(!use_alerts)
 		return FALSE
 
-	if(owner.dead)
+	if(!owner || owner.dead)
 		return FALSE
 
 	if(alert_level <= alert_level && alert_source && is_living(alert_source))
@@ -862,7 +890,7 @@
 			if(L == owner)
 				return FALSE
 		else
-			if(!is_enemy(L) || radius_find_enemy <= 0 )
+			if(!is_enemy(L,FALSE) || radius_find_enemy <= 0 )
 				return FALSE //Ignore sounds and stuff made by teammates, as well as people we do not give a fuck about.
 
 	var/old_alert_level = alert_level

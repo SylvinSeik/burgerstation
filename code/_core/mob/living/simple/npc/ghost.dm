@@ -4,7 +4,7 @@
 	desc_extended  = "..."
 	//Icon and icon state is set in AI.
 
-	ai = /ai/ghost
+	ai = /ai/ghost/
 	damage_type = /damagetype/npc/ghost
 	class = /class/antagonist
 	level_multiplier = 1000
@@ -13,7 +13,7 @@
 
 	has_footsteps = FALSE
 
-	collision_flags = FLAG_COLLISION_ETHEREAL | FLAG_COLLISION_UNSIMULATED
+	collision_flags = FLAG_COLLISION_UNSIMULATED
 	collision_bullet_flags = FLAG_COLLISION_BULLET_NONE
 
 	movement_delay = DECISECONDS_TO_TICKS(2)
@@ -58,7 +58,10 @@
 
 
 
-
-
 /mob/living/simple/npc/ghost/handle_alpha()
+	if(dead) return 0
 	return desired_alpha
+
+
+/mob/living/simple/npc/ghost/shitass
+	ai = /ai/ghost/shitass

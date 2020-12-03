@@ -1,4 +1,4 @@
-/obj/item/bullet_cartridge/ //NOT TO BE CONFUSED WITH PROJECTILES.
+/obj/item/bullet_cartridge/
 	name = "bullet"
 	desc = "Try not to bite it."
 	desc_extended = "Bullets can be put in guns with the matching ammo type."
@@ -26,6 +26,8 @@
 	var/bullet_color //The bullet color of the projectile.
 	var/inaccuracy_modifer = 1 //The modifer for target doll inaccuracy. Lower values means more accurate.
 
+	var/caseless = FALSE
+
 	var/jam_chance = 0 //Chance to not eject when spent.
 	var/misfire_chance = 0 //Chance not to shoot when shot.
 
@@ -35,6 +37,8 @@
 	size = 0.01
 
 	var/bullet_seed //For icon generation.
+
+	drop_sound = 'sound/items/bullet_casing.ogg'
 
 /obj/item/bullet_cartridge/New(var/desired_loc)
 	calculate_weight()
@@ -52,9 +56,6 @@
 
 	return .
 
-/obj/item/bullet_cartridge/proc/get_bullet_eject_sound()
-	return 'sound/weapons/gun/general/mag_bullet_remove.ogg'
-
 /obj/item/bullet_cartridge/proc/get_bullet_insert_sound()
 	return 'sound/weapons/gun/general/mag_bullet_insert.ogg'
 
@@ -66,7 +67,7 @@
 	update_sprite()
 	return .
 
-/obj/item/bullet_cartridge/on_drop(var/obj/hud/inventory/old_inventory,var/atom/new_loc)
+/obj/item/bullet_cartridge/on_drop(var/obj/hud/inventory/old_inventory,var/atom/new_loc,var/silent=FALSE)
 	. = ..()
 	update_sprite()
 	return .
@@ -114,14 +115,17 @@
 
 	return .
 
-/obj/item/bullet_cartridge/proc/spend_bullet(var/mob/caller)
+/obj/item/bullet_cartridge/proc/spend_bullet(var/mob/caller,var/bonus_misfire_chance=0)
 
 	if(!is_spent)
-		if(misfire_chance && luck(list(caller,src,loc),misfire_chance,FALSE))
+		var/total_misfire_chance = bonus_misfire_chance + misfire_chance
+		if(total_misfire_chance && luck(list(caller,src,loc),total_misfire_chance,FALSE))
 			return FALSE
 		is_spent = TRUE
-		plane = PLANE_OBJ
+		plane = PLANE_JUNK
 		item_count_max = max(item_count_max,100000) //Some absurd value.
+		if(caseless)
+			qdel(src)
 		return src
 
 	return FALSE

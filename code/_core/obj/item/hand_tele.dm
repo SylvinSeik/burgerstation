@@ -22,9 +22,20 @@
 		INITIALIZE(battery)
 		GENERATE(battery)
 		FINALIZE(battery)
-		update_sprite()
 
 	return ..()
+
+/obj/item/hand_teleporter/Finalize()
+
+	. = ..()
+
+	if(!istype(battery))
+		battery = null
+
+	update_sprite()
+
+	return .
+
 
 /obj/item/hand_teleporter/update_icon()
 
@@ -48,7 +59,6 @@
 /obj/item/hand_teleporter/load_item_data_pre(var/mob/living/advanced/player/P,var/list/object_data)
 	. = ..()
 	LOADATOM("battery")
-	update_sprite()
 	return .
 
 /obj/item/hand_teleporter/clicked_on_by_object(var/mob/caller,var/atom/object,location,control,params)
@@ -87,6 +97,11 @@
 /obj/item/hand_teleporter/click_on_object(var/mob/caller as mob,var/atom/object,location,control,params) //The src is used on the object
 
 	var/obj/item/powercell/PC = get_battery()
+
+	if(ispath(PC))
+		caller.to_chat(span("danger","Warning: This item is bugged. Tell burger how you obtained this item."))
+		return FALSE
+
 	if(!PC || PC.charge_current < teleport_cost)
 		caller.to_chat(span("warning","\The [src.name] beeps, indicating a lack of charge!"))
 		return FALSE
@@ -94,9 +109,17 @@
 	var/turf/simulated/T = get_turf(object)
 
 	if(!istype(T))
+		caller.to_chat(span("danger","It's not safe to teleport here!"))
 		return TRUE
 
 	if(!T.is_safe_teleport())
+		caller.to_chat(span("danger","It's not safe to teleport here!"))
+		return FALSE
+
+	var/area/A = T.loc
+
+	if(A && A.flags_area & FLAGS_AREA_NO_TELEPORT)
+		caller.to_chat(span("danger","It's not safe to teleport here!"))
 		return FALSE
 
 	caller.force_move(T)
@@ -105,3 +128,6 @@
 	update_sprite()
 
 	return TRUE
+	
+/obj/item/hand_teleporter/get_examine_list(var/mob/caller)
+	return ..() + div("notice","Teleports Remaining: [FLOOR(battery.charge_current/30000,1)]")

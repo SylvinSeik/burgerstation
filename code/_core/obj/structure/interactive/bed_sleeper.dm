@@ -26,6 +26,8 @@ obj/structure/interactive/bed/sleeper
 
 	interaction_flags = FLAG_INTERACTION_LIVING
 
+	density = TRUE
+
 obj/structure/interactive/bed/sleeper/Initialize()
 	new /obj/structure/interactive/blocker(get_step(loc,EAST),src)
 	check_collisions()
@@ -81,7 +83,7 @@ obj/structure/interactive/bed/sleeper/unbuckle(var/mob/caller,var/silent=FALSE)
 obj/structure/interactive/bed/sleeper/proc/open(var/mob/caller)
 	if(open_sound)
 		play(open_sound,src)
-		create_alert(VIEW_RANGE,src,caller,ALERT_LEVEL_NOISE)
+		create_alert(VIEW_RANGE,src.loc,caller,ALERT_LEVEL_NOISE)
 	door_state = SLEEPER_OPENING
 	update_icon()
 	CALLBACK("on_open_\ref[src]",open_time,src,.proc/on_open,caller)
@@ -105,7 +107,7 @@ obj/structure/interactive/bed/sleeper/proc/close(var/mob/caller)
 		buckle(A,caller)
 	if(close_sound)
 		play(close_sound,src)
-		create_alert(VIEW_RANGE,src,caller,ALERT_LEVEL_NOISE)
+		create_alert(VIEW_RANGE,src.loc,caller,ALERT_LEVEL_NOISE)
 	door_state = SLEEPER_CLOSING
 	update_icon()
 	CALLBACK("on_close_\ref[src]",close_time,src,.proc/on_close,caller)
@@ -195,9 +197,9 @@ obj/structure/interactive/bed/sleeper/medical/think()
 	if(buckled || is_living(buckled))
 		var/mob/living/L = buckled
 		if(L.health)
-			L.health.adjust_loss_smart(brute=-5,burn=-5,tox=-1)
+			L.health.adjust_loss_smart(brute=-1,burn=-1,tox=-1,robotic=FALSE)
 		if(L.blood_type)
-			L.blood_volume = min(L.blood_volume + 3,L.blood_volume_max)
+			L.blood_volume = min(L.blood_volume + 1,L.blood_volume_max)
 	return TRUE
 
 obj/structure/interactive/bed/sleeper/medical/close(var/mob/caller)
@@ -206,7 +208,7 @@ obj/structure/interactive/bed/sleeper/medical/close(var/mob/caller)
 		buckle(A,caller)
 	if(close_sound)
 		play(close_sound,src)
-		create_alert(VIEW_RANGE,src,caller,ALERT_LEVEL_NOISE)
+		create_alert(VIEW_RANGE,src.loc,caller,ALERT_LEVEL_NOISE)
 	door_state = SLEEPER_CLOSING
 	update_icon()
 	CALLBACK("on_close_\ref[src]",close_time,src,.proc/on_close,caller)

@@ -13,8 +13,10 @@
 	invisibility = INVISIBLITY_GHOST
 	see_invisible = INVISIBLITY_GHOST
 
-/mob/abstract/observer/ghost/do_say(var/text_to_say, var/should_sanitize = TRUE, var/talk_type_to_use = TEXT_TALK)
-	return ..(text_to_say,should_sanitize,TEXT_GHOST)
+	density = 1
+
+/mob/abstract/observer/ghost/do_say(var/text_to_say, var/should_sanitize = TRUE, var/talk_type_to_use = TEXT_TALK,var/talk_range=TALK_RANGE,var/language_to_use=null)
+	return ..(text_to_say,should_sanitize,TEXT_GHOST,talk_range,language_to_use)
 
 /mob/abstract/observer/ghost/add_inherent_verbs()
 	verbs += /mob/abstract/observer/ghost/verb/move_up

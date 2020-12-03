@@ -1,7 +1,6 @@
 /health/mob/living/
-	var/has_bloodloss = TRUE
+	var/has_bloodoxygen = TRUE
 	organic = TRUE
-
 
 /health/mob/living/get_defense(var/atom/attacker,var/atom/hit_object)
 
@@ -11,22 +10,22 @@
 
 	var/armor_bonus = FLOOR(L.intoxication*0.025 + max(0,L.nutrition - 1000)*0.05,5)
 
-	if(armor_bonus >= 10)
-		var/list/bonus_armor = list(
-			BLADE = armor_bonus,
-			BLUNT = armor_bonus,
-			PIERCE = armor_bonus,
-			ARCANE = -armor_bonus,
-			COLD = armor_bonus
-		)
+	var/list/bonus_armor = list(
+		BLADE = armor_bonus,
+		BLUNT = armor_bonus,
+		PIERCE = armor_bonus,
+		ARCANE = -armor_bonus,
+		COLD = armor_bonus,
+		FATIGUE = FLOOR(L.get_attribute_power(ATTRIBUTE_RESILIENCE)*100,1)
+	)
 
-		for(var/damage_type in bonus_armor)
-			if(.[damage_type])
-				if(IS_INFINITY(.[damage_type]))
-					continue
-				.[damage_type] += bonus_armor[damage_type]
-			else
-				.[damage_type] = bonus_armor[damage_type]
+	for(var/damage_type in bonus_armor)
+		if(.[damage_type])
+			if(IS_INFINITY(.[damage_type]))
+				continue
+			.[damage_type] += bonus_armor[damage_type]
+		else
+			.[damage_type] = bonus_armor[damage_type]
 
 	for(var/list/bonus in L.defense_bonuses) //Superpowers and whatnot.
 		for(var/damage_type in bonus)
@@ -52,12 +51,9 @@
 
 		var/mob/living/L = owner
 
-		if(has_bloodloss)
-			var/blood_percent = L.blood_volume/L.blood_volume_max
-			if(blood_percent <= 1)
-				damage[OXY] = clamp(1 - (0.15 + blood_percent),0,1) * 300
-			else
-				damage[OXY] = (blood_percent-1)*50
+		if(has_bloodoxygen)
+			var/blood_oxygen = (L.blood_volume/L.blood_volume_max) + L.blood_oxygen
+			damage[OXY] = max(0,health_max*(0.4 - blood_oxygen*0.4))
 
 		var/should_be_dead = check_death && L.check_death()
 

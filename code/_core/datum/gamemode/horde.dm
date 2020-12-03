@@ -13,10 +13,12 @@
 	hidden = TRUE
 
 	var/enemies_to_spawn_base = 4
-	var/enemies_to_spawn_per_player = 1
+	var/enemies_to_spawn_per_player = 0.5
 	var/enemies_to_spawn_per_minute = 0.1
 
 	var/next_spawn_check = 0
+
+	var/spawn_on_markers = TRUE
 
 /gamemode/horde/update_objectives()
 
@@ -31,6 +33,16 @@
 
 	return .
 
+/gamemode/horde/proc/create_horde_mob(var/desired_loc)
+	var/mob/living/L = pickweight(enemy_types_to_spawn)
+	L = new L(desired_loc)
+	INITIALIZE(L)
+	FINALIZE(L)
+	GENERATE(L)
+	HOOK_ADD("post_death","horde_post_death",L,src,.proc/on_killed_enemy)
+	return L
+
+
 /gamemode/horde/New()
 
 	state = GAMEMODE_WAITING
@@ -38,12 +50,10 @@
 	round_time_next = HORDE_DELAY_WAIT //Skip to gearing. Nothing to wait for.
 	announce(name,"Starting new round...",desc)
 
-	for(var/k in horde_spawnpoints)
-		var/turf/T = k
-		var/mob/living/L = pickweight(enemy_types_to_spawn)
-		L = new L(T)
-		INITIALIZE(L)
-		FINALIZE(L)
+	if(spawn_on_markers)
+		for(var/k in horde_spawnpoints)
+			var/turf/T = k
+			create_horde_mob(T)
 
 	for(var/obj/structure/interactive/computer/console/remote_flight/O in world)
 		if(O.z < Z_LEVEL_MISSION)
@@ -68,7 +78,6 @@
 	//Base Objectives.
 	add_objective(/objective/artifact)
 	add_objective(/objective/hostage)
-	add_objective(/objective/kill_ghost)
 
 	if(player_count >= 10)
 		add_objective(/objective/hostage)
@@ -167,6 +176,40 @@
 	round_time = 0
 	return TRUE
 
+/gamemode/horde/proc/get_wave_frequency()
+
+	var/player_count = length(all_clients)
+
+	switch(player_count)
+		if(0 to 10)
+			return SECONDS_TO_DECISECONDS(60)
+		if(10 to 20)
+			return SECONDS_TO_DECISECONDS(45)
+		if(20 to 30)
+			return SECONDS_TO_DECISECONDS(30)
+		if(30 to INFINITY)
+			return SECONDS_TO_DECISECONDS(15)
+
+	return SECONDS_TO_DECISECONDS(60)
+
+/gamemode/horde/proc/get_wave_size()
+
+	var/player_count = length(all_clients)
+
+	switch(player_count)
+		if(0 to 10)
+			return 3
+		if(10 to 20)
+			return 4
+		if(20 to 30)
+			return 5
+		if(30 to INFINITY)
+			return 6
+
+	return 4
+
+
+
 /gamemode/horde/proc/get_enemy_types_to_spawn()
 	return enemy_types_to_spawn
 
@@ -175,18 +218,18 @@
 	if(next_spawn_check > world.time)
 		return TRUE
 
-	next_spawn_check = world.time + SECONDS_TO_DECISECONDS(60)
+	next_spawn_check = world.time + SECONDS_TO_DECISECONDS(1) //Incase a check fails.
 
 	handle_alert_level()
 
 	var/wave_to_spawn = get_enemies_to_spawn() - length(tracked_enemies)
 
-	log_debug("Trying to spawn [wave_to_spawn] enemies.")
+	var/wave_we_want_to_spawn = get_wave_size()
 
-	if(wave_to_spawn < 4)
+	if(wave_to_spawn < wave_we_want_to_spawn)
 		return TRUE
 
-	wave_to_spawn = 4 //Only spawn 4 in a group at a time.
+	wave_to_spawn = wave_we_want_to_spawn //Only spawn 4 in a group at a time.
 
 	var/obj/marker/map_node/spawn_node = find_horde_spawn()
 	if(!spawn_node)
@@ -203,20 +246,21 @@
 		log_error("ERROR: Could not find a valid path from [spawn_node.get_debug_name()] to [target_node.get_debug_name()]!")
 		return TRUE
 
-	var/turf/T = get_turf(spawn_node)
+	next_spawn_check = world.time + get_wave_frequency()
 
+	var/turf/T = get_turf(spawn_node)
 	while(wave_to_spawn > 0)
 		wave_to_spawn--
 		CHECK_TICK(50,FPS_SERVER*5)
-		var/mob/living/L = pickweight(get_enemy_types_to_spawn())
-		L = new L(T)
-		INITIALIZE(L)
-		FINALIZE(L)
+		var/mob/living/L = create_horde_mob(T)
 		L.ai.set_path(found_path)
 		tracked_enemies += L
-		HOOK_ADD("post_death","horde_post_death",L,src,.proc/on_killed_enemy)
 
 /gamemode/horde/proc/on_killed_enemy(var/mob/living/L,var/args)
+
+	for(var/k in SSholiday.holidays)
+		var/holiday/H = SSholiday.holidays[k]
+		H.horde_post_death(L)
 
 	if(!(L in tracked_enemies))
 		return FALSE
@@ -230,9 +274,11 @@
 
 /gamemode/horde/proc/get_enemies_to_spawn()
 	. = enemies_to_spawn_base
-	. += length(all_players)*enemies_to_spawn_per_player
-	. += DECISECONDS_TO_SECONDS(world.time)/(60*enemies_to_spawn_per_minute)
-	. = max( min(40,length(all_players)*enemies_to_spawn_per_player*2) )
+	if(enemies_to_spawn_per_player)
+		. += length(all_players)*enemies_to_spawn_per_player
+	if(enemies_to_spawn_per_minute)
+		. += DECISECONDS_TO_SECONDS(world.time)/(60*enemies_to_spawn_per_minute)
+	. = min(.,50)
 	return FLOOR(.,1)
 
 /gamemode/horde/proc/find_horde_target()

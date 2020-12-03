@@ -3,6 +3,8 @@
 	icon_state = "ship"
 	flags_area = FLAGS_AREA_NO_DAMAGE | FLAGS_AREA_NO_CONSTRUCTION
 
+	sound_environment = ENVIRONMENT_ROOM
+
 	ambient_sound = 'sound/ambient/station_loop.ogg'
 	random_sounds = list(
 		'sound/ambient/station_1.ogg',
@@ -22,11 +24,13 @@
 
 	trackable = TRUE
 
-	area_identifier = "Station"
+	area_identifier = "Burgerstation"
 
 /area/burgerstation/hall
 	name = "\improper Hallway"
 	icon_state = "hall"
+
+	sound_environment = ENVIRONMENT_HALLWAY
 
 /area/burgerstation/hall/north
 	name = "\improper North Hallway"
@@ -58,6 +62,8 @@
 	name = "\improper Bathrooms"
 	icon_state = "bath"
 
+	sound_environment = ENVIRONMENT_BATHROOM
+
 /area/burgerstation/cafe
 	name = "\improper Cafe"
 	icon_state = "cafe"
@@ -75,10 +81,14 @@
 	name = "\improper Dressing Room"
 	icon_state = "dressing"
 
+	sound_environment = ENVIRONMENT_BATHROOM
+
 /area/burgerstation/dorm
 	name = "\improper Dorm"
 	icon_state = "dorm"
 	flags_area = FLAGS_AREA_NO_DAMAGE | FLAGS_AREA_NO_CONSTRUCTION | FLAGS_AREA_SAVEZONE
+
+	sound_environment = ENVIRONMENT_BATHROOM
 
 /area/burgerstation/help_desk
 	name = "\improper Help Desk"
@@ -112,13 +122,25 @@
 	name = "\improper Library"
 	icon_state = "library"
 
+	sound_environment = ENVIRONMENT_CARPETTED_HALLWAY
+
 /area/burgerstation/engineering
 	name = "\improper Engineering"
 	icon_state = "eng"
 
+/area/burgerstation/engineering/ce
+	name = "\improper Chief Engineer's Office"
+	icon_state = "cmd"
+	flags_area = FLAGS_AREA_NO_DAMAGE | FLAGS_AREA_NO_CONSTRUCTION | FLAGS_AREA_NO_EVENTS | FLAGS_AREA_NO_TELEPORT
+
 /area/burgerstation/medical
 	name = "\improper Medical"
 	icon_state = "med"
+
+/area/burgerstation/medical/cmo
+	name = "\improper Chief Medical Officer's Office"
+	icon_state = "cmd"
+	flags_area = FLAGS_AREA_NO_DAMAGE | FLAGS_AREA_NO_CONSTRUCTION | FLAGS_AREA_NO_EVENTS | FLAGS_AREA_NO_TELEPORT
 
 /area/burgerstation/medical/chemistry
 	name = "\improper Chemistry"
@@ -144,6 +166,8 @@
 	name = "\improper Hanger"
 	icon_state = "hanger"
 
+	sound_environment = ENVIRONMENT_HANGAR
+
 /area/burgerstation/cargo
 	name = "\improper Cargo"
 	icon_state = "cargo"
@@ -158,6 +182,8 @@
 		'sound/ambient/maint_1.ogg',
 		'sound/ambient/maint_2.ogg'
 	)
+
+	sound_environment = ENVIRONMENT_ALLEY
 
 /area/burgerstation/maint/north
 	name = "\improper North Maintenance"
@@ -179,8 +205,9 @@
 	name = "\improper Disposals Maintenance"
 	icon_state = "disposals"
 
-
 /area/burgerstation/pvp
 	name = "ERROR"
 	icon_state = "pvp"
-	flags_area = FLAGS_AREA_NO_DAMAGE | FLAGS_AREA_NO_CONSTRUCTION | FLAG_AREA_NO_LOYALTY | FLAGS_AREA_NO_EVENTS
+	flags_area = FLAGS_AREA_NO_DAMAGE | FLAGS_AREA_NO_CONSTRUCTION | FLAG_AREA_NO_LOYALTY | FLAGS_AREA_NO_EVENTS | FLAGS_AREA_NO_TELEPORT
+
+	sound_environment = ENVIRONMENT_ALLEY
